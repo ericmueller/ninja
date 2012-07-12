@@ -107,7 +107,7 @@ var BumpMetalMaterial = function BumpMetalMaterial() {
 		this._propValues[ this._propNames[3] ] = this._defaultSpecularTexture.slice(0);
 		for (var i=0; i<4;  i++)
 			this.setProperty( this._propNames[i],  this._propValues[this._propNames[i]]  );
-};
+    };
 };
 
 
