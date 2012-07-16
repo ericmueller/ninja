@@ -208,7 +208,8 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer ) {
         this.light = RDGE.createLightNode("myLight");
         this.light.setPosition([0,0,1.2]);
         this.light.setDiffuseColor([0.75,0.9,1.0,1.0]);
-        this.light.lightType = "amb_light";
+        this.light.setAmbientColor( [0.5, 0.5, 0.5,  1.0]);
+        this.light.setSpecularColor( [0.4, 0.4, 0.4,  1.0]);
 
         // light 2
 //      this.light2 = RDGE.createLightNode("myLight2");
@@ -252,7 +253,7 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer ) {
 
             // orbit the light nodes around the boxes
             //this.light.setPosition([1.2*Math.cos(this.elapsed*2.0), 1.2*Math.sin(this.elapsed*2.0), 1.2*Math.cos(this.elapsed*2.0)]);
-            this.light.setPosition([5 * Math.cos(this.elapsed), 5 * Math.sin(this.elapsed), 20]);
+            this.light.setPosition([5 * Math.cos(this.elapsed), 5 * Math.sin(this.elapsed), 10]);
             //this.light2.setPosition([-1.2*Math.cos(this.elapsed*2.0), 1.2*Math.sin(this.elapsed*2.0), -1.2*Math.cos(this.elapsed)]);
         }
 

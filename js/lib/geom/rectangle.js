@@ -428,7 +428,7 @@ exports.Rectangle = Object.create(GeomObj, {
 			for (i=0;  i<strokePrimArray.length;  i++)
 			{
 				this._primArray.push( strokePrimArray[i] );
-            this._materialNodeArray.push( strokeMaterial.getMaterialNode() );
+                this._materialNodeArray.push( strokeMaterial.getMaterialNode() );
 			}
 
             // fill
@@ -440,13 +440,13 @@ exports.Rectangle = Object.create(GeomObj, {
             yFill -= strokeSize;
             var fillMaterial = this.makeFillMaterial();
             //console.log( "fillMaterial: " + fillMaterial.getName() );
-			var fillPrimArray = this.createFill([x,y],  2*xFill,  2*yFill,  tlRadius, blRadius, brRadius, trRadius, fillMaterial);
-			fillMaterial.fitToPrimitiveArray( fillPrimArray );
-			for (i=0;  i<fillPrimArray.length;  i++)
-			{
-				this._primArray.push( fillPrimArray[i] );
-            this._materialNodeArray.push( fillMaterial.getMaterialNode() );
-			}
+            var fillPrimArray = this.createFill([x,y],  2*xFill,  2*yFill,  tlRadius, blRadius, brRadius, trRadius, fillMaterial);
+            fillMaterial.fitToPrimitiveArray( fillPrimArray );
+            for (i=0;  i<fillPrimArray.length;  i++)
+            {
+                this._primArray.push( fillPrimArray[i] );
+                this._materialNodeArray.push( fillMaterial.getMaterialNode() );
+            }
 
             world.updateObject(this);
         }
