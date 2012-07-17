@@ -86,10 +86,13 @@ var BumpMetalMaterial = function BumpMetalMaterial() {
              this.setWorld( world );
         }
 
+        // build the shader
+        this._shader = this.buildShader( bumpMetalMaterialDef );
+
         // set up the shader
-        this._shader = new RDGE.jshader();
-        this._shader.def = bumpMetalMaterialDef;
-        this._shader.init();
+//        this._shader = new RDGE.jshader();
+//        this._shader.def = bumpMetalMaterialDef;
+//        this._shader.init();
 
         // set up the material node
         this._materialNode = RDGE.createMaterialNode( this.getShaderName() + "_" + world.generateUniqueNodeID() );

@@ -253,9 +253,12 @@ var Material = function GLMaterial( world ) {
     this.setProperty = function( prop,  value )
     {
         var ok = this.validateProperty( prop, value );
-        if (!ok && (prop != 'color')) {
-            //console.log( "invalid property in Material:" + prop + " : " + value );
-            return;
+        if (!ok)
+        {
+            if ((prop != 'color') || !value) {
+                //console.log( "invalid property in Material:" + prop + " : " + value );
+                return;
+            }
         }
 
         // get the technique if the shader is instantiated
@@ -385,6 +388,81 @@ var Material = function GLMaterial( world ) {
     };
 
     ///////////////////////////////////////////////////////////////////////
+    // Build the shader by adding light procedures to the base shader
+    ///////////////////////////////////////////////////////////////////////
+    this.buildShader = function( def )
+    {
+        var shader;
+
+        var vShaderFile = def.shaders.defaultVShader;
+        var fShaderFile = def.shaders.defaultFShader;
+
+        var vShader, fShader;
+        var r = new XMLHttpRequest();
+        r.open('GET', vShaderFile, false);
+        r.send(null);
+        if (r.status == 200)
+            vShader = r.responseText;
+
+        r.open('GET', fShaderFile, false);
+        r.send(null);
+        if (r.status == 200)
+            fShader = r.responseText;
+
+        var lightVars;
+        r.open('GET', "assets/shaders/LightVars.glsl", false);
+        r.send(null);
+        if (r.status == 200)
+             lightVars = r.responseText;
+
+        var lightDir;
+        r.open('GET', "assets/shaders/LightDirectional.glsl", false);
+        r.send(null);
+        if (r.status == 200)
+             lightDir = r.responseText;
+
+        var lightPoint;
+        r.open('GET', "assets/shaders/LightPoint.glsl", false);
+        r.send(null);
+        if (r.status == 200)
+             lightPoint = r.responseText;
+
+        var lightSpot;
+        r.open('GET', "assets/shaders/LightSpot.glsl", false);
+        r.send(null);
+        if (r.status == 200)
+             lightSpot = r.responseText;
+
+        if ( vShader && fShader && lightVars && lightDir && lightPoint && lightSpot )
+        {
+            // find where to insert the light functions
+            var lightSubStr = "// ADD LIGHT FUNCTIONS HERE";
+            var index = fShader.indexOf( lightSubStr );
+            if (index >= 0)
+            {
+                var fShader_A = fShader.substr( 0, index ),
+                    fShader_B = fShader.substr( index + lightSubStr.length );
+                fShader = fShader_A + lightVars + lightDir + lightPoint + lightSpot + fShader_B;
+
+                // redefine the shader source in the definition
+                def.shaders.defaultVShader = vShader;
+                def.shaders.defaultFShader = fShader;
+ 
+                // build output jshader
+                shader = new RDGE.jshader();
+                shader.def = def;
+                // initialize the jshader
+                try {
+                    shader.init();
+                }
+                catch (e) {
+                    console.log("error initializing shader: " + e);
+                }
+            }
+        }
+
+        return shader;
+   }
 
     ///////////////////////////////////////////////////////////////////////
     // Methods

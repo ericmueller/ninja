@@ -41,7 +41,6 @@ precision highp float;
 // diffuse map
 uniform sampler2D u_colMap;
 
-
 // varyings
 varying vec4 vNormal; // w = texcoord.x
 varying vec4 vECPos;  // w = texcoord.y
@@ -50,7 +49,7 @@ varying vec3 vEyePos;
 //varying vec2 vEnvTexCoord;
 //varying float vDiffuseIntensity;
 
-#if defined( USE_POINT_LIGHT ) || defined( USE_DIRECTIONAL_LIGHT ) || defined( USE_SPOT_LIGHT )
+
 //material uniforms
 uniform vec4   u_matAmbient;
 uniform vec4   u_matDiffuse;
@@ -58,12 +57,6 @@ uniform vec4   u_matSpecular;
 uniform float  u_matShininess;
 uniform vec4   u_matEmission;
 uniform float  u_renderGlow;
-
-// lighting uniforms
-uniform vec3 u_light0Pos;
-uniform vec4 u_light0Diff;
-uniform vec4 u_light0Amb;
-uniform vec4 u_light0Spec;
 
 // environment map
 uniform sampler2D envMap;
@@ -76,144 +69,10 @@ uniform sampler2D u_glowMap;
 
 // depth map
 uniform sampler2D depthMap;
-#endif
 
 #if defined( PC )
 
-
-#if defined( USE_DIRECTIONAL_LIGHT )
-void CalculateDirectionalLight( in vec3 normal,  out vec4 ambient,  out vec4 diffuse,  out vec4 specular )
-{
-    float nDotVP;
-    float nDotHV;
-    float pf;
-
-    vec3 halfVector = normalize(vec3(0,0,1) + u_light0Pos);
-
-    vec3 mapNormal = texture2D(u_normalMap, vec2(vNormal.w, vECPos.w)).xyz * 2.0 - 1.0;
-    mapNormal = normalize(mapNormal.x*vec3(normal.z, 0.0, -normal.x) + vec3(0.0, mapNormal.y, 0.0) + mapNormal.z*normal);
-
-    nDotVP = max( 0.0,  dot(mapNormal, normalize(u_light0Pos)));
-    nDotHV = max( 0.0,  dot(mapNormal, halfVector));
-
-    if (nDotVP == 0.0)
-        pf = 0.0;
-    else
-        pf = pow(nDotHV, u_matShininess);
-
-    ambient  = u_matAmbient * u_light0Amb;
-    diffuse  = u_light0Diff * nDotVP;
-    specular = 2.0 * vec4(pf) * u_light0Spec;
-}
-#endif
-
-
-#if defined( USE_POINT_LIGHT )
-void CalculatePointLight( vec4 colMapTexel,  vec3 normal,  inout vec4 rtnAmbient,  inout vec4 rtnDiffuse,  inout vec4 rtnSpecular )
-{
-    vec4 ambient, diffuse, specular;
-
-    // normal mapping
-    vec3 mapNormal = texture2D(u_normalMap, vec2(vNormal.w, vECPos.w)).xyz * 2.0 - 1.0;
-    mapNormal = normalize(mapNormal.x*vec3(normal.z, 0.0, -normal.x) + vec3(0.0, mapNormal.y, 0.0) + mapNormal.z*normal);
-
-    // create envmap coordinates
-    //vec3 r = reflect( normalize(vec3(vECPos.xyz - vEyePos.xyz)), mapNormal);
-    //float m = 2.0 * sqrt( r.x*r.x + r.y*r.y + r.z*r.z );
-
-    // calculate environment map texel
-    //vec4 envMapTexel = vec4(texture2D(envMap, vec2(r.x/m + 0.5, r.y/m + 0.5)).rgb, 0.0);
-
-    // lighting
-    vec3 lightDirection = u_light0Pos - vECPos.xyz;
-    float lightDist = length(lightDirection);
-    lightDirection /= lightDist;
-
-    float attenuation = clamp(1.0 - lightDist * 0.01, 0.0, 1.0);
-
-    vec3 halfVec = normalize(lightDirection + vEyePos);
-
-    float diffuseIntensity = max(0.0, dot(mapNormal, lightDirection));
-    float specularModifier = max(0.0, dot(mapNormal, halfVec));
-
-    float pf;
-    if(diffuseIntensity == 0.0)
-        pf = 0.0;
-    else
-        pf = pow(specularModifier, 76.0);
-
-    ambient = u_matAmbient * u_light0Amb;
-
-    //vec4 diffuse = u_matDiffuse * (colMapTexel + envMapTexel)*shadowCoef;
-    //vec4 diffuse = u_matDiffuse * (colMapTexel + envMapTexel);
-    diffuse = u_matDiffuse;
-
-    if (u_renderGlow <= 0.5) {
-        diffuse *= u_light0Diff;
-    }
-
-    #if defined( USE_ENV_MAP )
-        specular = 2.0 * pf * envMapTexel;
-    #else
-        specular = 2.0 * vec4(pf) * u_light0Spec;
-    #endif
-
-    rtnAmbient  += ambient;
-    rtnDiffuse  += diffuse;
-    rtnSpecular += specular;
-}
-#endif
-
-#if defined (USE_SPOT_LIGHT)
-void CalculateSpotLight( vec3 normal,  inout vec4 ambient,  inout vec4 diffuse,  inout vec4 specular )
-{
-    float   nDotVP,
-            nDotHV,
-            pf,
-            d,
-            attenuation,
-            spotDot;
-    vec3    vp;
-
-    // compute the half vector
-    vec3 halfVector = normalize(vec3(0,0,1) + u_light0Pos);
-
-    // compute the vector from the surface to the light source
-    vp = u_light0Pos - vECPos.xyz;
-    d  = length(vp);
-    vp = normalize( vp );
-
-    vec3 mapNormal = texture2D(u_normalMap, vec2(vNormal.w, vECPos.w)).xyz * 2.0 - 1.0;
-    mapNormal = normalize(mapNormal.x*vec3(normal.z, 0.0, -normal.x) + vec3(0.0, mapNormal.y, 0.0) + mapNormal.z*normal);
-
-    nDotVP = max( 0.0,  dot(mapNormal, normalize(u_light0Pos)));
-    nDotHV = max( 0.0,  dot(mapNormal, halfVector));
-
-    if (nDotVP == 0.0)
-        pf = 0.0;
-    else
-        pf = pow(nDotHV, u_matShininess);
-
-    // compute the attenuation
-    attenuation = clamp(1.0 - d * 0.01, 0.0, 1.0);
-
-    // check if the point on the surface is within the cone of the light
-    vec3 spotDir = normalize( -u_light0Pos );        // obviously, these 4 should be uniforms
-    float spotCosCutoff = 0.999,  spotAttenuation;
-    float spotExponent = 6.0;
-    spotDot = dot( -vp, spotDir );
-    if (spotDot < spotCosCutoff)
-        spotAttenuation = 0.0;
-    else
-        spotAttenuation = pow( spotDot, spotExponent );
-    attenuation *= spotAttenuation;
-
-    ambient  += u_light0Amb  * attenuation;
-    diffuse  += u_light0Diff * attenuation * nDotVP;
-    specular += u_light0Spec * attenuation * pf;
-}
-#endif
-
+// ADD LIGHT FUNCTIONS HERE
 
 void main()
 {
@@ -227,7 +86,8 @@ void main()
 
     vec4 colMapTexel = vec4(texture2D(u_colMap, vec2(vNormal.w, vECPos.w)).rgb, 1.0);
 
-    vec4    ambient = vec4(0,0,0,0),  diffuse = vec4(0,0,0,0),  specular = vec4(0,0,0,0);
+    vec4 ambient = vec4(0,0,0,0),  diffuse = vec4(0,0,0,0),  specular = vec4(0,0,0,0);
+    // ADD LIGHT CALLS HERE
     #if defined (USE_POINT_LIGHT)
        CalculatePointLight( vNormal.xyz,   ambient,  diffuse,  specular  );
     #elif defined (USE_DIRECTIONAL_LIGHT)
@@ -239,8 +99,8 @@ void main()
         diffuse  = u_light0Diff;
         specular = u_light0Spec;
     #endif
-    gl_FragColor = ((colMapTexel*(ambient + diffuse)) + specular);
 
+    gl_FragColor = ((colMapTexel*(ambient + diffuse)) + specular);
 }
 
 #endif

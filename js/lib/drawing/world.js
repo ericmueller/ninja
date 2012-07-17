@@ -42,11 +42,16 @@ var worldCounter = 0;
 // Class GLWorld
 //      Manages display in a canvas
 ///////////////////////////////////////////////////////////////////////
-var World = function GLWorld( canvas, use3D, preserveDrawingBuffer ) {
+var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
+{
+    var LIGHT_TYPE_UNDEFINED    = -1;
+    var LIGHT_TYPE_DIRECTIONAL  =  0;
+    var LIGHT_TYPE_POINT        =  1;
+    var LIGHT_TYPE_SPOT         =  2;
+
     ///////////////////////////////////////////////////////////////////////
     // Instance variables
     ///////////////////////////////////////////////////////////////////////
-
     // flag to do the drawing with WebGL
     this._useWebGL = false;
     if(use3D) {
