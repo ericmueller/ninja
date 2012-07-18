@@ -41,7 +41,7 @@ uniform vec3 u_light1Pos;
 uniform vec4 u_light1Diff;
 uniform vec4 u_light1Amb;
 uniform vec4 u_light1Spec;
-uniform  int u_light2Type;
+uniform  int u_light1Type;
 
 uniform vec3 u_light2Pos;
 uniform vec4 u_light2Diff;
@@ -55,13 +55,15 @@ uniform vec4 u_light3Amb;
 uniform vec4 u_light3Spec;
 uniform  int u_light3Type;
 
+/*
 void AddLight( in int lightType,  in vec3 lightPos,  in vec4 lightAmb,  in vec4 lightDiff,  in vec4 lightSpec,  in vec3 normal,  inout vec4 ambient,  inout vec4 diffuse,  inout vec4 specular )
 {
     if (lightType == 0)
-        CalculateDirectionalLight( in vec3 normal,  out vec4 ambient,  out vec4 diffuse,  out vec4 specular );
+        CalculateDirectionalLight(      normal,  ambient,  diffuse,  specular );
     else if (lightType == 1)
-        CalculatePointLight( vec4 colMapTexel,  vec3 normal,  inout vec4 rtnAmbient,  inout vec4 rtnDiffuse,  inout vec4 rtnSpecular );
+        CalculatePointLight( lightPos,  normal,  ambient,  diffuse,  specular );
     else if (lightType == 2)
-        CalculateSpotLight( vec3 normal,  inout vec4 ambient,  inout vec4 diffuse,  inout vec4 specular )
+        CalculateSpotLight(  lightPos,  normal,  ambient,  diffuse,  specular );
 }
+*/
 

@@ -442,22 +442,37 @@ var Material = function GLMaterial( world ) {
             {
                 var fShader_A = fShader.substr( 0, index ),
                     fShader_B = fShader.substr( index + lightSubStr.length );
-                fShader = fShader_A + lightVars + lightDir + lightPoint + lightSpot + fShader_B;
+                fShader = fShader_A + lightVars + lightDir + lightPoint + lightSpot + 
+                            "void AddLight( in int lightType,  in vec3 lightPos,  in vec4 lightAmb,  in vec4 lightDiff,  in vec4 lightSpec,  in vec3 normal,  inout vec4 ambient,  inout vec4 diffuse,  inout vec4 specular ) {\n" +                            "    if (lightType == 0)\n" +                            "        CalculateDirectionalLight(      normal,  ambient,  diffuse,  specular );\n" +                            "    else if (lightType == 1)\n" +                            "        CalculatePointLight( lightPos,  normal,  ambient,  diffuse,  specular );\n" +                            "    else if (lightType == 2)\n" +                            "        CalculateSpotLight(  lightPos,  normal,  ambient,  diffuse,  specular );\n" +                            "}\n" +                fShader_B;
 
-                // redefine the shader source in the definition
-                def.shaders.defaultVShader = vShader;
-                def.shaders.defaultFShader = fShader;
+                lightSubStr = "// ADD LIGHT CALLS HERE";
+                index = fShader.indexOf( lightSubStr );
+                if (index >= 0)
+                {
+                    fShader_A = fShader.substr( 0, index );
+                    fShader_B = fShader.substr( index + lightSubStr.length );
+                    fShader = fShader_A + 
+                                "if (u_light0Type >= 0)  AddLight( u_light0Type,  u_light0Pos,  u_light0Amb,  u_light0Diff,  u_light0Spec,  vNormal.xyz,    ambient,  diffuse,  specular );\n" +
+                                "if (u_light1Type >= 0)  AddLight( u_light1Type,  u_light1Pos,  u_light1Amb,  u_light1Diff,  u_light1Spec,  vNormal.xyz,    ambient,  diffuse,  specular );\n" +
+                                "if (u_light2Type >= 0)  AddLight( u_light2Type,  u_light2Pos,  u_light2Amb,  u_light2Diff,  u_light2Spec,  vNormal.xyz,    ambient,  diffuse,  specular );\n" +
+                                "if (u_light3Type >= 0)  AddLight( u_light3Type,  u_light3Pos,  u_light3Amb,  u_light3Diff,  u_light3Spec,  vNormal.xyz,    ambient,  diffuse,  specular );\n" +
+                              fShader_B;
+  
+                    // redefine the shader source in the definition
+                    def.shaders.defaultVShader = vShader;
+                    def.shaders.defaultFShader = fShader;
  
-                // build output jshader
-                shader = new RDGE.jshader();
-                shader.def = def;
-                // initialize the jshader
-                try {
-                    shader.init();
-                }
-                catch (e) {
-                    console.log("error initializing shader: " + e);
-                }
+                    // build output jshader
+                    shader = new RDGE.jshader();
+                    shader.def = def;
+                    // initialize the jshader
+                    try {
+                        shader.init();
+                    }
+                    catch (e) {
+                        console.log("error initializing shader: " + e);
+                    }
+              }
             }
         }
 

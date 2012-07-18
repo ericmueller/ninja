@@ -29,10 +29,35 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
-    int lightCount = 0,
-        dirLightCount = 0,
-        pointLightCount = 0,
-        spotLightCount = 0;
 
-    if (u_light0Type == 0)
-        CalculateDirectionalLight( vNormal.xyz,   ambient,  diffuse,  specular  );
+var PointLight = require("js/lib/drawing/directional-light").PointLight;
+
+
+var SpotLight = function SpotLight()
+{
+    ///////////////////////////////////////////////////////////////////////
+    // Properties
+    ///////////////////////////////////////////////////////////////////////
+    this._type = this.LIGHT_TYPE_SPOT;
+
+    this._cosConeAngle = 0.999;
+
+
+    ///////////////////////////////////////////////////////////////////////
+    // Methods
+    ///////////////////////////////////////////////////////////////////////
+    this.getCosConeAngle    = function()    {  return this._cosConeAngle;   }
+    this.setCosConeAngle    = function(c)   {  this._cosConeAngle = c;      }
+};
+
+
+
+SpotLight.prototype = new PointLight();
+
+if (typeof exports === "object") {
+    exports.PointLight = PointLight;
+}
+
+
+
+

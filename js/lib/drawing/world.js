@@ -44,11 +44,6 @@ var worldCounter = 0;
 ///////////////////////////////////////////////////////////////////////
 var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
 {
-    var LIGHT_TYPE_UNDEFINED    = -1;
-    var LIGHT_TYPE_DIRECTIONAL  =  0;
-    var LIGHT_TYPE_POINT        =  1;
-    var LIGHT_TYPE_SPOT         =  2;
-
     ///////////////////////////////////////////////////////////////////////
     // Instance variables
     ///////////////////////////////////////////////////////////////////////
@@ -115,6 +110,9 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
 
     // for sending notifications to listeners
     this._notifier = new Notifier();
+
+    // array of lights
+    this._lightArray = [];
 
     ///////////////////////////////////////////////////////////////////////
     // Property accessors
@@ -215,6 +213,12 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
         this.light.setDiffuseColor([0.75,0.9,1.0,1.0]);
         this.light.setAmbientColor( [0.5, 0.5, 0.5,  1.0]);
         this.light.setSpecularColor( [0.4, 0.4, 0.4,  1.0]);
+
+        // enable light 0, disable the rest
+        RDGE.rdgeGlobalParameters.u_light0Type.set( [1] );
+        RDGE.rdgeGlobalParameters.u_light1Type.set( [-1] );
+        RDGE.rdgeGlobalParameters.u_light2Type.set( [-1] );
+        RDGE.rdgeGlobalParameters.u_light3Type.set( [-1] );
 
         // light 2
 //      this.light2 = RDGE.createLightNode("myLight2");

@@ -29,7 +29,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
-void CalculatePointLight( vec4 colMapTexel,  vec3 normal,  inout vec4 rtnAmbient,  inout vec4 rtnDiffuse,  inout vec4 rtnSpecular )
+void CalculatePointLight( in vec3 lightPos,  in vec3 normal,  inout vec4 rtnAmbient,  inout vec4 rtnDiffuse,  inout vec4 rtnSpecular )
 {
     vec4 ambient, diffuse, specular;
 
@@ -45,7 +45,7 @@ void CalculatePointLight( vec4 colMapTexel,  vec3 normal,  inout vec4 rtnAmbient
     //vec4 envMapTexel = vec4(texture2D(envMap, vec2(r.x/m + 0.5, r.y/m + 0.5)).rgb, 0.0);
 
     // lighting
-    vec3 lightDirection = u_light0Pos - vECPos.xyz;
+    vec3 lightDirection = lightPos - vECPos.xyz;
     float lightDist = length(lightDirection);
     lightDirection /= lightDist;
 

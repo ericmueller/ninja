@@ -88,17 +88,6 @@ void main()
 
     vec4 ambient = vec4(0,0,0,0),  diffuse = vec4(0,0,0,0),  specular = vec4(0,0,0,0);
     // ADD LIGHT CALLS HERE
-    #if defined (USE_POINT_LIGHT)
-       CalculatePointLight( vNormal.xyz,   ambient,  diffuse,  specular  );
-    #elif defined (USE_DIRECTIONAL_LIGHT)
-        CalculateDirectionalLight( vNormal.xyz,   ambient,  diffuse,  specular  );
-    #elif defined (USE_SPOT_LIGHT)
-        CalculateSpotLight( vNormal.xyz,  ambient,  diffuse,  specular );
-    #else
-        ambient  = u_light0Amb;
-        diffuse  = u_light0Diff;
-        specular = u_light0Spec;
-    #endif
 
     gl_FragColor = ((colMapTexel*(ambient + diffuse)) + specular);
 }

@@ -29,27 +29,35 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
-void CalculateDirectionalLight( in vec3 normal,  inout vec4 ambient,  inout vec4 diffuse, inout vec4 specular )
+
+var Light = require("js/lib/drawing/light").Light;
+
+
+var DirectionalLight = function DirectionalLight()
 {
-    float nDotVP;
-    float nDotHV;
-    float pf;
+    ///////////////////////////////////////////////////////////////////////
+    // Properties
+    ///////////////////////////////////////////////////////////////////////
+    this._type = this.LIGHT_TYPE_DIRECTIONAL;
 
-    vec3 halfVector = normalize(vec3(0,0,1) + u_light0Pos);
+    this._direction = [0, 0, 5];
 
-    vec3 mapNormal = texture2D(u_normalMap, vec2(vNormal.w, vECPos.w)).xyz * 2.0 - 1.0;
-    mapNormal = normalize(mapNormal.x*vec3(normal.z, 0.0, -normal.x) + vec3(0.0, mapNormal.y, 0.0) + mapNormal.z*normal);
 
-    nDotVP = max( 0.0,  dot(mapNormal, normalize(u_light0Pos)));
-    nDotHV = max( 0.0,  dot(mapNormal, halfVector));
+    ///////////////////////////////////////////////////////////////////////
+    // Methods
+    ///////////////////////////////////////////////////////////////////////
+    this.getDirection    = function()    {  return this._direction.slice();     }
+    this.setDirection    = function(d)   {  this._direction = d.slice();        }
+};
 
-    if (nDotVP == 0.0)
-        pf = 0.0;
-    else
-        pf = pow(nDotHV, u_matShininess);
 
-    ambient  += u_matAmbient * u_light0Amb;
-    diffuse  += u_light0Diff * nDotVP;
-    specular += 2.0 * vec4(pf) * u_light0Spec;
+
+DirectionalLight.prototype = new Light();
+
+if (typeof exports === "object") {
+    exports.DirectionalLight = DirectionalLight;
 }
+
+
+
 

@@ -29,7 +29,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
-void CalculateSpotLight( vec3 normal,  inout vec4 ambient,  inout vec4 diffuse,  inout vec4 specular )
+void CalculateSpotLight( vec3 lightPos, vec3 normal,  inout vec4 ambient,  inout vec4 diffuse,  inout vec4 specular )
 {
     float   nDotVP,
             nDotHV,
@@ -40,17 +40,17 @@ void CalculateSpotLight( vec3 normal,  inout vec4 ambient,  inout vec4 diffuse, 
     vec3    vp;
 
     // compute the half vector
-    vec3 halfVector = normalize(vec3(0,0,1) + u_light0Pos);
+    vec3 halfVector = normalize(vec3(0,0,1) + lightPos);
 
     // compute the vector from the surface to the light source
-    vp = u_light0Pos - vECPos.xyz;
+    vp = lightPos - vECPos.xyz;
     d  = length(vp);
     vp = normalize( vp );
 
     vec3 mapNormal = texture2D(u_normalMap, vec2(vNormal.w, vECPos.w)).xyz * 2.0 - 1.0;
     mapNormal = normalize(mapNormal.x*vec3(normal.z, 0.0, -normal.x) + vec3(0.0, mapNormal.y, 0.0) + mapNormal.z*normal);
 
-    nDotVP = max( 0.0,  dot(mapNormal, normalize(u_light0Pos)));
+    nDotVP = max( 0.0,  dot(mapNormal, normalize(lightPos)));
     nDotHV = max( 0.0,  dot(mapNormal, halfVector));
 
     if (nDotVP == 0.0)
@@ -62,7 +62,7 @@ void CalculateSpotLight( vec3 normal,  inout vec4 ambient,  inout vec4 diffuse, 
     attenuation = clamp(1.0 - d * 0.01, 0.0, 1.0);
 
     // check if the point on the surface is within the cone of the light
-    vec3 spotDir = normalize( -u_light0Pos );        // obviously, these 4 should be uniforms
+    vec3 spotDir = normalize( -lightPos );        // obviously, these 4 should be uniforms
     float spotCosCutoff = 0.999,  spotAttenuation;
     float spotExponent = 6.0;
     spotDot = dot( -vp, spotDir );
