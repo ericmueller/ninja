@@ -481,6 +481,10 @@ RDGE.lightNodeTemplate = function (lightNode) {
         lightNode.nodeType = RDGE.rdgeConstants.nodeType.LIGHTNODE;
     }
 
+    if (!lightNode.lightType) {
+        lightNode.lightType = 1;    // point light
+    }
+
     if (!lightNode.id) {
         lightNode.id = RDGE.nodeIdGen.getId();
     }

@@ -72,7 +72,7 @@ RDGE.lightDataMap =
     function(ctx, loc, lightNode) { ctx.uniform4fv(loc, lightNode.lightDiffuse); },
     function(ctx, loc, lightNode) { ctx.uniform4fv(loc, lightNode.lightAmbient); },
     function(ctx, loc, lightNode) { ctx.uniform4fv(loc, lightNode.lightSpecular); },
-    function(ctx, loc, lightNode) { ctx.uniform1iv(loc, lightNode.lightType); }
+    function(ctx, loc, lightNode) { ctx.uniform1iv(loc, [lightNode.lightType]); }
 ];
 
 RDGE.paramTypeNameMapping = null;

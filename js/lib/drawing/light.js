@@ -38,10 +38,10 @@ POSSIBILITY OF SUCH DAMAGE.
 ///////////////////////////////////////////////////////////////////////
 var Light = function Light()
 {
-    var LIGHT_TYPE_UNDEFINED    = -1;
-    var LIGHT_TYPE_DIRECTIONAL  =  0;
-    var LIGHT_TYPE_POINT        =  1;
-    var LIGHT_TYPE_SPOT         =  2;
+    this.LIGHT_TYPE_UNDEFINED    = -1;
+    this.LIGHT_TYPE_DIRECTIONAL  =  0;
+    this.LIGHT_TYPE_POINT        =  1;
+    this.LIGHT_TYPE_SPOT         =  2;
 
     ///////////////////////////////////////////////////////////////////////
     // Instance variables

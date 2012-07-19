@@ -35,6 +35,7 @@ var Line = require("js/lib/geom/line").Line;
 var Rectangle = require("js/lib/geom/rectangle").Rectangle;
 var Circle = require("js/lib/geom/circle").Circle;
 var MaterialsModel = require("js/models/materials-model").MaterialsModel;
+var Light = require("js/lib/drawing/light").Light;
 
 var worldCounter = 0;
 
@@ -213,6 +214,7 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
         this.light.setDiffuseColor([0.75,0.9,1.0,1.0]);
         this.light.setAmbientColor( [0.5, 0.5, 0.5,  1.0]);
         this.light.setSpecularColor( [0.4, 0.4, 0.4,  1.0]);
+        this.light.lightType = new Light().LIGHT_TYPE_POINT;
 
         // enable light 0, disable the rest
         RDGE.rdgeGlobalParameters.u_light0Type.set( [1] );
