@@ -404,34 +404,39 @@ var Material = function GLMaterial( world ) {
         if (r.status == 200)
             vShader = r.responseText;
 
-        r.open('GET', fShaderFile, false);
-        r.send(null);
-        if (r.status == 200)
-            fShader = r.responseText;
+        var r2 = new XMLHttpRequest();
+        r2.open('GET', fShaderFile, false);
+        r2.send(null);
+        if (r2.status == 200)
+            fShader = r2.responseText;
 
         var lightVars;
-        r.open('GET', "assets/shaders/LightVars.glsl", false);
-        r.send(null);
-        if (r.status == 200)
-             lightVars = r.responseText;
+        var r3 = new XMLHttpRequest();
+        r3.open('GET', "assets/shaders/LightVars.glsl", false);
+        r3.send(null);
+        if (r3.status == 200)
+             lightVars = r3.responseText;
 
         var lightDir;
-        r.open('GET', "assets/shaders/LightDirectional.glsl", false);
-        r.send(null);
-        if (r.status == 200)
-             lightDir = r.responseText;
+        var r4 = new XMLHttpRequest();
+        r4.open('GET', "assets/shaders/LightDirectional.glsl", false);
+        r4.send(null);
+        if (r4.status == 200)
+             lightDir = r4.responseText;
 
         var lightPoint;
-        r.open('GET', "assets/shaders/LightPoint.glsl", false);
-        r.send(null);
-        if (r.status == 200)
-             lightPoint = r.responseText;
+        var r5 = new XMLHttpRequest();
+        r5.open('GET', "assets/shaders/LightPoint.glsl", false);
+        r5.send(null);
+        if (r5.status == 200)
+             lightPoint = r5.responseText;
 
         var lightSpot;
-        r.open('GET', "assets/shaders/LightSpot.glsl", false);
-        r.send(null);
-        if (r.status == 200)
-             lightSpot = r.responseText;
+        var r6 = new XMLHttpRequest();
+        r6.open('GET', "assets/shaders/LightSpot.glsl", false);
+        r6.send(null);
+        if (r6.status == 200)
+             lightSpot = r6.responseText;
 
         if ( vShader && fShader && lightVars && lightDir && lightPoint && lightSpot )
         {
@@ -443,7 +448,17 @@ var Material = function GLMaterial( world ) {
                 var fShader_A = fShader.substr( 0, index ),
                     fShader_B = fShader.substr( index + lightSubStr.length );
                 fShader = fShader_A + lightVars + lightDir + lightPoint + lightSpot + 
-                            "void AddLight( in int lightType,  in vec3 lightPos,  in vec4 lightAmb,  in vec4 lightDiff,  in vec4 lightSpec,  in vec3 normal,  inout vec4 ambient,  inout vec4 diffuse,  inout vec4 specular ) {\n" +                            "    if (lightType == 0)\n" +                            "        CalculateDirectionalLight(      normal,  ambient,  diffuse,  specular );\n" +                            "    else if (lightType == 1)\n" +                            "        CalculatePointLight( lightPos,  normal,  ambient,  diffuse,  specular );\n" +                            "    else if (lightType == 2)\n" +                            "        CalculateSpotLight(  lightPos,  normal,  ambient,  diffuse,  specular );\n" +                            "}\n" +                fShader_B;
+                            "void AddLight( in int lightType,  in vec3 lightPos,  in vec4 lightAmb,  in vec4 lightDiff,  in vec4 lightSpec,  in vec3 normal,  inout vec4 ambient,  inout vec4 diffuse,  inout vec4 specular ) {\n" +
+                            "    if (lightType == 0)\n" +
+                            "        ambient += lightAmb;\n" +
+                            "    else if (lightType == 1)\n" +
+                            "        CalculateDirectionalLight(      normal,  ambient,  diffuse,  specular );\n" +
+                            "    else if (lightType == 2)\n" +
+                            "        CalculatePointLight( lightPos,  normal,  ambient,  diffuse,  specular );\n" +
+                            "    else if (lightType == 3)\n" +
+                            "        CalculateSpotLight(  lightPos,  normal,  ambient,  diffuse,  specular );\n" +
+                            "}\n" +
+                fShader_B;
 
                 lightSubStr = "// ADD LIGHT CALLS HERE";
                 index = fShader.indexOf( lightSubStr );
@@ -472,6 +487,10 @@ var Material = function GLMaterial( world ) {
                     catch (e) {
                         console.log("error initializing shader: " + e);
                     }
+
+                    // restore the definition
+                    def.shaders.defaultVShader = vShaderFile;
+                    def.shaders.defaultFShader = fShaderFile;
               }
             }
         }

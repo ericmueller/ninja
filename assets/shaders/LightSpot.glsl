@@ -62,7 +62,7 @@ void CalculateSpotLight( vec3 lightPos, vec3 normal,  inout vec4 ambient,  inout
     attenuation = clamp(1.0 - d * 0.01, 0.0, 1.0);
 
     // check if the point on the surface is within the cone of the light
-    vec3 spotDir = normalize( -lightPos );        // obviously, these 4 should be uniforms
+    vec3 spotDir = normalize( vec3(0.0, 0.0, -8.0) - lightPos );        // obviously, these 4 should be uniforms
     float spotCosCutoff = 0.999,  spotAttenuation;
     float spotExponent = 6.0;
     spotDot = dot( -vp, spotDir );

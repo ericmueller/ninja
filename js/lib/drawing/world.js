@@ -214,18 +214,21 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
         this.light.setDiffuseColor([0.75,0.9,1.0,1.0]);
         this.light.setAmbientColor( [0.5, 0.5, 0.5,  1.0]);
         this.light.setSpecularColor( [0.4, 0.4, 0.4,  1.0]);
-        this.light.lightType = new Light().LIGHT_TYPE_POINT;
-
-        // enable light 0, disable the rest
-        RDGE.rdgeGlobalParameters.u_light0Type.set( [1] );
-        RDGE.rdgeGlobalParameters.u_light1Type.set( [-1] );
-        RDGE.rdgeGlobalParameters.u_light2Type.set( [-1] );
-        RDGE.rdgeGlobalParameters.u_light3Type.set( [-1] );
+        this.light.lightType = new Light().LIGHT_TYPE_SPOT;
 
         // light 2
-//      this.light2 = RDGE.createLightNode("myLight2");
-//      this.light2.setPosition([-0.5,0,1.2]);
-//      this.light2.setDiffuseColor([1.0,0.9,0.75,1.0]);
+        this.light.setPosition([-3,0,1.2]);
+        this.light2 = RDGE.createLightNode("myLight2");
+        this.light2.setAmbientColor([ 0.2, 0.2, 0.2,  1.0]);
+        this.light.setDiffuseColor([0.75,0.9,1.0,1.0]);
+        this.light.setSpecularColor( [0.4, 0.4, 0.4,  1.0]);
+        this.light2.lightType = new Light().LIGHT_TYPE_POINT;
+
+        // enable light 0, disable the rest
+        RDGE.rdgeGlobalParameters.u_light0Type.set( [this.light.lightType] );
+        RDGE.rdgeGlobalParameters.u_light1Type.set( [this.light2.lightType] );
+        RDGE.rdgeGlobalParameters.u_light2Type.set( [-1] );
+        RDGE.rdgeGlobalParameters.u_light3Type.set( [-1] );
 
         // create a light transform
         var lightTr = RDGE.createTransformNode("lightTr");
@@ -235,7 +238,7 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
 
         // enable light channels 1, 2 - channel 0 is used by the default shader
         lightTr.materialNode.enableLightChannel(0, this.light);
-//      lightTr.materialNode.enableLightChannel(2, this.light2);
+        lightTr.materialNode.enableLightChannel(1, this.light2);
 
         // all added objects are parented to the light node
         this._rootNode = lightTr;

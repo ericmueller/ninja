@@ -58,11 +58,11 @@ uniform  int u_light3Type;
 /*
 void AddLight( in int lightType,  in vec3 lightPos,  in vec4 lightAmb,  in vec4 lightDiff,  in vec4 lightSpec,  in vec3 normal,  inout vec4 ambient,  inout vec4 diffuse,  inout vec4 specular )
 {
-    if (lightType == 0)
+    if (lightType == 1)
         CalculateDirectionalLight(      normal,  ambient,  diffuse,  specular );
-    else if (lightType == 1)
-        CalculatePointLight( lightPos,  normal,  ambient,  diffuse,  specular );
     else if (lightType == 2)
+        CalculatePointLight( lightPos,  normal,  ambient,  diffuse,  specular );
+    else if (lightType == 3)
         CalculateSpotLight(  lightPos,  normal,  ambient,  diffuse,  specular );
 }
 */
