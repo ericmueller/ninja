@@ -36,6 +36,21 @@ var Montage = require("montage/core/core").Montage,
 
 var TimelinePanel = exports.TimelinePanel = Montage.create(Component, {
 
+    _stage: {
+        value: null
+    },
+
+    stage: {
+        get: function() {
+            return this._stage;
+        },
+        set: function(value) {
+            if(value) {
+                this._stage = value;
+            }
+        }
+    },
+
     /* === BEGIN: Models === */
 	_user_layers: {
 		value: null
@@ -512,7 +527,7 @@ var TimelinePanel = exports.TimelinePanel = Montage.create(Component, {
         set:function (newVal) {
             if (newVal !== this._millisecondsOffset) {
 
-                this.tempValue  = newVal;
+                this.zoomValue  = newVal;
                 var tempValue = (1/newVal) * 1000000;
                 newVal = tempValue;
 
@@ -1015,7 +1030,6 @@ var TimelinePanel = exports.TimelinePanel = Montage.create(Component, {
             this.eventManager.addEventListener("updatedID", this.handleLayerIdUpdate.bind(this), false);
 			this.checkable_lock.addEventListener("click",this.handleLockLayerClick.bind(this),false);
             this.checkable_visible.addEventListener("click",this.handleLayerVisibleClick.bind(this),false);
-            this.play_button.addEventListener("click", this.handlePlayButtonClick.bind(this), false);
             this.addPropertyChangeListener("currentDocument.model.domContainer", this);
             
 			// Start the panel out in disabled mode by default
@@ -1116,8 +1130,13 @@ var TimelinePanel = exports.TimelinePanel = Montage.create(Component, {
                 this.currentLayersSelected = this.application.ninja.currentDocument.tlCurrentLayersSelected;
                 this.currentElementsSelected = this.application.ninja.currentDocument.tlCurrentElementsSelected;
                 this._currentDocumentUuid = this.application.ninja.currentDocument.uuid;
-
-
+//                if(this.application.ninja.currentDocument.tlZoomSliderValue){
+//                this.millisecondsOffset = this.application.ninja.currentDocument.tlZoomSliderValue ;
+//                    if(this.zoom_slider){
+//                        this.zoom_slider.value = this.application.ninja.currentDocument.tlZoomSliderValue;
+//                    }
+//
+//                }
                 // Are we only showing animated layers?
 				if (this.application.ninja.currentDocument.boolShowOnlyAnimated) {
 					// Fake a click.
@@ -1638,21 +1657,6 @@ var TimelinePanel = exports.TimelinePanel = Montage.create(Component, {
         }
     },
 
-    handlePlayButtonClick:{
-        value:function(ev){
-            this.application.ninja.appModel.livePreview = !this.application.ninja.appModel.livePreview;
-
-            if (this.application.ninja.appModel.livePreview) {
-                this.play_button.classList.remove("playbutton");
-                this.play_button.classList.add("pausebutton");
-
-            } else {
-                this.play_button.classList.remove("pausebutton");
-                this.play_button.classList.add("playbutton");
-            }
-        }
-    },
-
     handleKeyframeShortcut:{
         value:function(action){
             var tempEv = {};
@@ -1707,12 +1711,17 @@ var TimelinePanel = exports.TimelinePanel = Montage.create(Component, {
     zoomTrackContainerWidthChange:{
         value:function () {
 
-            this.tempValue = this.tempValue/1000;
-            this.tempValue *= 30;
+            if(this.application.ninja.currentDocument && this.zoomValue){
+                this.application.ninja.currentDocument.tlZoomSliderValue = this.zoomValue;
 
-            this.container_tracks.style.width = (this.tempValue * 80) + "px";
-            this.master_track.style.width = (this.tempValue * 80) + "px";
-            this.time_markers.style.width = (this.tempValue * 80) + "px";
+            }
+
+            this.zoomValue = this.zoomValue/1000;
+            this.zoomValue *= 30;
+
+            this.container_tracks.style.width = (this.zoomValue * 80) + "px";
+            this.master_track.style.width = (this.zoomValue * 80) + "px";
+            this.time_markers.style.width = (this.zoomValue * 80) + "px";
             if (this.timeMarkerHolder) {
                 this.time_markers.removeChild(this.timeMarkerHolder);
             }
@@ -1918,7 +1927,12 @@ var TimelinePanel = exports.TimelinePanel = Montage.create(Component, {
 
     handleElementsRemoved:{
         value:function (event) {
-            this.deleteLayers(event.detail);
+
+            if(typeof(event.detail.length) === "undefined"){
+                this.deleteLayers([event.detail]);
+            }else{
+                this.deleteLayers(event.detail);
+            }
         }
     },
 
