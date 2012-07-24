@@ -123,7 +123,8 @@ exports.MaterialsPopup = Montage.create(Component, {
                     break;
                 case "Reset":
                     this.reset();
-                    break;
+                    return;     // don't dismiss the dialog
+                    // break;
             }
 
             // Notify Materials Library to close popup
@@ -149,7 +150,55 @@ exports.MaterialsPopup = Montage.create(Component, {
     {
         value: function()
         {
-//            console.log("Reset");
+            if (this._originalValues)
+            {
+                this._material.resetToDefault();
+
+                if (this._useSelection)
+                {
+                    var selection = this.application.ninja.selectedElements;
+                    if (selection && (selection.length > 0))
+                    {
+                        var nObjs = selection.length;
+                        for (var iObj=0;  iObj<nObjs;  iObj++)
+                        {
+                            var canvas = selection[iObj];
+                            var obj;
+                            if (canvas.elementModel && canvas.elementModel.shapeModel)  obj = canvas.elementModel.shapeModel.GLGeomObj;
+                            if (obj)
+                            {
+                                var matArray = obj._materialArray;
+                                var matTypeArray = obj._materialTypeArray;
+                                var nMats = matArray.length;
+                                for (var iMat=0;  iMat<nMats;  iMat++)
+                                {
+                                    if (matTypeArray[iMat] === this._whichMaterial)
+                                        matArray[iMat].resetToDefault();
+                                }
+                                var world = obj.getWorld();
+                                if (world)
+                                    world.restartRenderLoop();
+                            }
+                        }
+                    }
+
+                }
+
+                // Update preview material
+                obj = this.previewShape;
+                matArray = obj._materialArray;
+                matTypeArray = obj._materialTypeArray;
+                nMats = matArray.length;
+                for (iMat=0;  iMat<nMats;  iMat++)
+                {
+                    if (matTypeArray[iMat] === "fill")
+                        matArray[iMat].resetToDefault();
+                }
+                world = obj.getWorld();
+                if (world)
+                    world.restartRenderLoop();
+                this.loadMaterials( this._materialName,  this._useSelection,  this._whichMaterial );
+            }
         }
     },
 
@@ -320,7 +369,7 @@ exports.MaterialsPopup = Montage.create(Component, {
                 world = obj.getWorld();
                 if (world)
                     world.restartRenderLoop();
-        }
+            }
 		}
     },
 

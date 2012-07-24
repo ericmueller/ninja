@@ -48,14 +48,25 @@ var SpotLight = function SpotLight()
     ///////////////////////////////////////////////////////////////////////
     this.getCosConeAngle    = function()    {  return this._cosConeAngle;   }
     this.setCosConeAngle    = function(c)   {  this._cosConeAngle = c;      }
+
+
+    this.setUniforms = function()
+    {
+        var name = "u_light" + this._index;
+        RDGE.rdgeGlobalParameters[name + "Amb"].set( this.getAmbient() );
+        RDGE.rdgeGlobalParameters[name + "Diff"].set( this.getDiffuse() );
+        RDGE.rdgeGlobalParameters[name + "Spec"].set( this.getSpecular() );
+
+        RDGE.rdgeGlobalParameters[name + "Pos"].set( this.getDirection() );
+    }
 };
 
 
 
-SpotLight.prototype = new PointLight();
+SpotLight.prototype = new SpotLight();
 
 if (typeof exports === "object") {
-    exports.PointLight = PointLight;
+    exports.SpotLight = SpotLight;
 }
 
 

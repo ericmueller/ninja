@@ -49,6 +49,10 @@ var Light = function Light()
     ///////////////////////////////////////////////////////////////////////
     this._type = -1;    // undefined
 
+    this._index = 0;        // the index of the set of uniform variables
+
+    this._rdgeLightNode = RDGE.createLightNode("myLight");
+
     // all lights have an ambient, diffuse and specular component
     this._ambient  = [0.2, 0.2, 0.2,  1.0];
     this._diffuse  = [0.6, 0.6, 0.6,  1.0];
@@ -61,11 +65,15 @@ var Light = function Light()
     this.getAmbient     = function()    {  return this._ambient.slice();    };
     this.getDiffuse     = function()    {  return this._diffuse.slice();    };
     this.getSpecular    = function()    {  return this._specular.slice();   };
+    this.getIndex       = function()    {  return this._index;              };
 
     this.setType        = function(t)   {  this._type = t;                  };
     this.setAmbient     = function(a)   {  this._ambient  = a.slice();      };
     this.setDiffuse     = function(d)   {  this._diffuse  = d.slice();      };
     this.setSpecular    = function(s)   {  this._specular = s.slice();      };
+    this.setIndex       = function(i)   {  this._index = i;                 };
+
+    this.getRDGELightNode   = function()    {  return this._rdgeLightNode;  };
 
     ///////////////////////////////////////////////////////////////////////
     // Common Methods
@@ -90,6 +98,14 @@ var Light = function Light()
         this.setDiffuse( jObj.diffuse );
         this.setSpecular( jObj.specular );
     };
+
+    this.setUniforms = function()
+    {
+        if (this._type == this.LIGHT_TYPE_AMBIENT)
+        {
+            RDGE.rdgeGlobalParameters["u_light" + this._index + "Amb"].set( this._ambient );
+        }
+    }
 };
 
 if (typeof exports === "object") {

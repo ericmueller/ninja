@@ -31,6 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 
 var Light = require("js/lib/drawing/light").Light;
+var vecUtils = require("js/helper-classes/3D/vec-utils").VecUtils;
 
 
 var DirectionalLight = function DirectionalLight()
@@ -48,6 +49,18 @@ var DirectionalLight = function DirectionalLight()
     ///////////////////////////////////////////////////////////////////////
     this.getDirection    = function()    {  return this._direction.slice();     }
     this.setDirection    = function(d)   {  this._direction = d.slice();        }
+
+
+
+    this.setUniforms = function()
+    {
+        var name = "u_light" + this._index;
+        RDGE.rdgeGlobalParameters[name + "Amb"].set( this.getAmbient() );
+        RDGE.rdgeGlobalParameters[name + "Diff"].set( this.getDiffuse() );
+        RDGE.rdgeGlobalParameters[name + "Spec"].set( this.getSpecular() );
+
+        RDGE.rdgeGlobalParameters[name + "Pos"].set( vecUtils.vecNegate(3, this.getDirection()) );
+    }
 };
 
 

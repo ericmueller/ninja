@@ -36,6 +36,11 @@ var Rectangle = require("js/lib/geom/rectangle").Rectangle;
 var Circle = require("js/lib/geom/circle").Circle;
 var MaterialsModel = require("js/models/materials-model").MaterialsModel;
 var Light = require("js/lib/drawing/light").Light;
+var DirectionalLight = require("js/lib/drawing/directional-light").DirectionalLight;
+var PointLight = require("js/lib/drawing/point-light").PointLight;
+var SpotLight = require("js/lib/drawing/spot-light").SpotLight;
+var vecUtils = require("js/helper-classes/3D/vec-utils").VecUtils;
+
 
 var worldCounter = 0;
 
@@ -209,26 +214,36 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
 
         // create some lights
         // light 1
-        this.light = RDGE.createLightNode("myLight");
-        this.light.setPosition([0,0,1.2]);
-        this.light.setDiffuseColor([0.75,0.9,1.0,1.0]);
-        this.light.setAmbientColor( [0.5, 0.5, 0.5,  1.0]);
-        this.light.setSpecularColor( [0.4, 0.4, 0.4,  1.0]);
-        this.light.lightType = new Light().LIGHT_TYPE_SPOT;
+//        this.light = RDGE.createLightNode("myLight");
+//        this.light.setPosition([0,0,1.2]);
+//        this.light.setDiffuseColor([0.75,0.9,1.0,1.0]);
+//        this.light.setAmbientColor( [0.5, 0.5, 0.5,  1.0]);
+//        this.light.setSpecularColor( [0.4, 0.4, 0.4,  1.0]);
+//        this.light.lightType = new Light().LIGHT_TYPE_SPOT;
 
-        // light 2
-        this.light.setPosition([-3,0,1.2]);
-        this.light2 = RDGE.createLightNode("myLight2");
-        this.light2.setAmbientColor([ 0.2, 0.2, 0.2,  1.0]);
-        this.light.setDiffuseColor([0.75,0.9,1.0,1.0]);
-        this.light.setSpecularColor( [0.4, 0.4, 0.4,  1.0]);
-        this.light2.lightType = new Light().LIGHT_TYPE_POINT;
+//        // light 2
+//        this.light.setPosition([-3,0,1.2]);
+//        this.light2 = RDGE.createLightNode("myLight2");
+//        this.light2.setAmbientColor([ 0.2, 0.2, 0.2,  1.0]);
+//        this.light.setDiffuseColor([0.75,0.9,1.0,1.0]);
+//        this.light.setSpecularColor( [0.4, 0.4, 0.4,  1.0]);
+//        this.light2.lightType = new Light().LIGHT_TYPE_POINT;
 
-        // enable light 0, disable the rest
-        RDGE.rdgeGlobalParameters.u_light0Type.set( [this.light.lightType] );
-        RDGE.rdgeGlobalParameters.u_light1Type.set( [this.light2.lightType] );
-        RDGE.rdgeGlobalParameters.u_light2Type.set( [-1] );
-        RDGE.rdgeGlobalParameters.u_light3Type.set( [-1] );
+//        // enable light 0, disable the rest
+//        RDGE.rdgeGlobalParameters.u_light0Type.set( [this.light.lightType] );
+//        RDGE.rdgeGlobalParameters.u_light1Type.set( [this.light2.lightType] );
+//        RDGE.rdgeGlobalParameters.u_light2Type.set( [-1] );
+//        RDGE.rdgeGlobalParameters.u_light3Type.set( [-1] );
+
+//        var light1 = new Light();
+//        light1.setAmbient( [1.0, 0.0, 0.0,  1.0] );
+//        light1.setType( light1.LIGHT_TYPE_AMBIENT );
+//        this.addLight( light1 );
+
+        var light2 = new PointLight();
+        light2.setPosition( [0.0, 0.0, 2.0] );
+        light2.setDiffuse( [0.0, 0.0, 1.0,  1.0] );
+        this.addLight( light2 );
 
         // create a light transform
         var lightTr = RDGE.createTransformNode("lightTr");
@@ -237,14 +252,17 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
         lightTr.attachMaterial(RDGE.createMaterialNode("lights"));
 
         // enable light channels 1, 2 - channel 0 is used by the default shader
-        lightTr.materialNode.enableLightChannel(0, this.light);
-        lightTr.materialNode.enableLightChannel(1, this.light2);
+//        lightTr.materialNode.enableLightChannel(0, this.light);
+//        lightTr.materialNode.enableLightChannel(1, this.light2);
 
         // all added objects are parented to the light node
         this._rootNode = lightTr;
 
         // add the light node to the scene
         this.myScene.addNode(lightTr);
+
+        // add the lights to the scene
+        this.applyLights();
 
         // Add the scene to the engine - necessary if you want the engine to draw for you
         //RDGE.globals.engine.AddScene("myScene" + this._canvas.id, this.myScene);
@@ -263,11 +281,13 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
         if (this._useWebGL)
         {
             // changed the global position uniform of light 0, another way to change behavior of a light
-            //RDGE.rdgeGlobalParameters.u_light0Pos.set([5 * Math.cos(this.elapsed), 5 * Math.sin(this.elapsed), 20]);
+            //RDGE.rdgeGlobalParameters.u_light0Pos.set([5 * Math.cos(this.elapsed), 5 * Math.sin(this.elapsed), 10]);
 
             // orbit the light nodes around the boxes
             //this.light.setPosition([1.2*Math.cos(this.elapsed*2.0), 1.2*Math.sin(this.elapsed*2.0), 1.2*Math.cos(this.elapsed*2.0)]);
-            this.light.setPosition([5 * Math.cos(this.elapsed), 5 * Math.sin(this.elapsed), 10]);
+            //this.light.setPosition([5 * Math.cos(this.elapsed), 5 * Math.sin(this.elapsed), 10]);
+            var light = this._lightArray[0].getRDGELightNode();
+            light.setPosition([5 * Math.cos(this.elapsed), 5 * Math.sin(this.elapsed), 10]);
             //this.light2.setPosition([-1.2*Math.cos(this.elapsed*2.0), 1.2*Math.sin(this.elapsed*2.0), -1.2*Math.cos(this.elapsed)]);
         }
 
@@ -696,6 +716,89 @@ World.prototype.updateMaterials = function( obj, time ) {
     this.updateMaterials( obj.getNext(),  time );
     this.updateMaterials( obj.getChild(), time );
 };
+
+World.prototype.addLight = function( light )
+{
+    if (!light)  return;
+
+    // check the type
+    var type = light.getType();
+    if ((type != light.LIGHT_TYPE_AMBIENT) && (type != light.LIGHT_TYPE_DIRECTIONAL) && (type != light.LIGHT_TYPE_POINT) && (type != light.LIGHT_TYPE_SPOT))  return;
+
+    // check the light count limit
+    if (this._lightArray.length >= 4)
+    {
+        console.log( "maximum light count (4) exceeded.  Light not added" );
+        return;
+    }
+
+    light.setIndex( this._lightArray.length );
+    this._lightArray.push( light );
+}
+
+World.prototype.applyLights = function()
+{
+    // disable all of the lights
+    RDGE.rdgeGlobalParameters.u_light0Type.set( [-1] );
+    RDGE.rdgeGlobalParameters.u_light1Type.set( [-1] );
+    RDGE.rdgeGlobalParameters.u_light2Type.set( [-1] );
+    RDGE.rdgeGlobalParameters.u_light3Type.set( [-1] );
+
+    // get the light transform node
+    var lightTrNode = this._rootNode;
+
+    // save the uniforms in an array
+    var uniformArray = [    RDGE.rdgeGlobalParameters.u_light0Type,
+                        RDGE.rdgeGlobalParameters.u_light1Type,
+                        RDGE.rdgeGlobalParameters.u_light2Type,
+                        RDGE.rdgeGlobalParameters.u_light3Type
+                    ];
+
+    // add the user defined lights
+    for (var i=0;  i<this._lightArray.length;  i++)
+    {
+        // get the light
+        var light = this._lightArray[i];
+
+        // create the RDGE light node
+        var name = "light_" + i;
+        var lightNode = light.getRDGELightNode();
+
+        // set the common light values in the RDGE node
+        lightNode.setDiffuseColor ( light.getDiffuse()  );
+        lightNode.setAmbientColor ( light.getAmbient()  );
+        lightNode.setSpecularColor( light.getSpecular() );
+        lightNode.lightType = light.getType();
+
+        switch (light.getType())
+        {
+            case light.LIGHT_TYPE_AMBIENT:
+                break;      // only parameter is ambient color - previously set
+
+            case light.LIGHT_TYPE_DIRECTIONAL:
+                lightNode.setPosition( vecUtils.vecNegate( 3, light.getDirection()) );
+                break;
+
+            case light.LIGHT_TYPE_POINT:
+               lightNode.setPosition( light.getPosition() );
+               break;
+
+            case light.LIGHT_TYPE_SPOT:
+               lightNode.setPosition( light.getPosition() );
+               break;
+        }
+       
+        // enable the light
+        lightTrNode.materialNode.enableLightChannel( i, lightNode );
+
+        // set the uniform type
+        uniformArray[i].set( [light.getType()] );
+   }
+}
+
+
+World.prototype.lightCount = function()         {  return this._lightArray.length;  }
+World.prototype.getLight = function( index )    {  return this._lightArray[index];  }
 
 // return the origin of the world in NDC
 World.prototype.getNDCOrigin = function() {

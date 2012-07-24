@@ -68,9 +68,9 @@ void CalculatePointLight( in vec3 lightPos,  in vec3 normal,  inout vec4 rtnAmbi
     //vec4 diffuse = u_matDiffuse * (colMapTexel + envMapTexel);
     diffuse = u_matDiffuse;
 
-    if (u_renderGlow <= 0.5) {
+    //if (u_renderGlow <= 0.5) {
         diffuse *= u_light0Diff;
-    }
+    //}
 
     #if defined( USE_ENV_MAP )
         specular = 2.0 * pf * envMapTexel;
