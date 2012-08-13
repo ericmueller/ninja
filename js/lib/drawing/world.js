@@ -245,6 +245,12 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
         light2.setDiffuse( [0.0, 0.0, 1.0,  1.0] );
         this.addLight( light2 );
 
+        var light = new Light();
+        //light.setPosition( [0.0, 0.0, 2.0] );
+        light.setAmbient( [0.5, 0.1, 0.1,  1.0] );
+        light.setDiffuse( [0.0, 0.0, 1.0,  1.0] );
+        this.addLight( light );
+
         // create a light transform
         var lightTr = RDGE.createTransformNode("lightTr");
 
@@ -764,40 +770,16 @@ World.prototype.applyLights = function()
     {
         // get the light
         var light = this._lightArray[i];
-
-        // create the RDGE light node
-        var name = "light_" + i;
-        var lightNode = light.getRDGELightNode();
-
-        // set the common light values in the RDGE node
-        lightNode.setDiffuseColor ( light.getDiffuse()  );
-        lightNode.setAmbientColor ( light.getAmbient()  );
-        lightNode.setSpecularColor( light.getSpecular() );
-        lightNode.lightType = light.getType();
-
-        switch (light.getType())
-        {
-            case light.LIGHT_TYPE_AMBIENT:
-                break;      // only parameter is ambient color - previously set
-
-            case light.LIGHT_TYPE_DIRECTIONAL:
-                lightNode.setPosition( vecUtils.vecNegate( 3, light.getDirection()) );
-                break;
-
-            case light.LIGHT_TYPE_POINT:
-               lightNode.setPosition( light.getPosition() );
-               break;
-
-            case light.LIGHT_TYPE_SPOT:
-               lightNode.setPosition( light.getPosition() );
-               break;
-        }
+        var lightType = light.getType();
        
         // enable the light
-        lightTrNode.materialNode.enableLightChannel( i, lightNode );
+        //lightTrNode.materialNode.enableLightChannel( i, light.getRDGELightNode() );
 
         // set the uniform type
-        uniformArray[i].set( [light.getType()] );
+        //uniformArray[i].set( [lightType] );
+
+        // set the uniforms
+        light.setUniforms();
    }
 }
 

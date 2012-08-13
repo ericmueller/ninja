@@ -47,7 +47,7 @@ var PointLight = function PointLight()
     // Methods
     ///////////////////////////////////////////////////////////////////////
     this.getPosition    = function()    {  return this._position.slice();   }
-    this.setPosition    = function(p)   {  this._position = p.slice();      }
+    this.setPosition    = function(p)   {  this._position = p.slice();      this._rdgeLightNode.setPosition( p.slice() );      }
 };
 
 

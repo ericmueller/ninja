@@ -30,7 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
 
-var PointLight = require("js/lib/drawing/directional-light").PointLight;
+var PointLight = require("js/lib/drawing/point-light").PointLight;
 
 
 var SpotLight = function SpotLight()
@@ -63,7 +63,7 @@ var SpotLight = function SpotLight()
 
 
 
-SpotLight.prototype = new SpotLight();
+SpotLight.prototype = new PointLight();
 
 if (typeof exports === "object") {
     exports.SpotLight = SpotLight;

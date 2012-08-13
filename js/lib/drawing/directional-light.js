@@ -41,20 +41,22 @@ var DirectionalLight = function DirectionalLight()
     ///////////////////////////////////////////////////////////////////////
     this._type = this.LIGHT_TYPE_DIRECTIONAL;
 
-    this._direction = [0, 0, 5];
+    this._direction = [0, 0, -1];
 
 
     ///////////////////////////////////////////////////////////////////////
     // Methods
     ///////////////////////////////////////////////////////////////////////
     this.getDirection    = function()    {  return this._direction.slice();     }
-    this.setDirection    = function(d)   {  this._direction = d.slice();        }
+    this.setDirection    = function(d)   {  this._direction = d.slice();     this._rdgeLightNode.dir =  d.slice();      }
 
 
 
     this.setUniforms = function()
     {
         var name = "u_light" + this._index;
+        RDGE.rdgeGlobalParameters[name + "Type"].set( [this.getType()] );
+
         RDGE.rdgeGlobalParameters[name + "Amb"].set( this.getAmbient() );
         RDGE.rdgeGlobalParameters[name + "Diff"].set( this.getDiffuse() );
         RDGE.rdgeGlobalParameters[name + "Spec"].set( this.getSpecular() );

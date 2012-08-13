@@ -470,11 +470,14 @@ var Material = function GLMaterial( world ) {
                 {
                     fShader_A = fShader.substr( 0, index );
                     fShader_B = fShader.substr( index + lightSubStr.length );
+//                    fShader = fShader_A + 
+//                                "if (u_light0Type >= 0)  AddLight( u_light0Type,  u_light0Pos,  u_light0Amb,  u_light0Diff,  u_light0Spec,  vNormal.xyz,    ambient,  diffuse,  specular );\n" +
+//                                "if (u_light1Type >= 0)  AddLight( u_light1Type,  u_light1Pos,  u_light1Amb,  u_light1Diff,  u_light1Spec,  vNormal.xyz,    ambient,  diffuse,  specular );\n" +
+//                                "if (u_light2Type >= 0)  AddLight( u_light2Type,  u_light2Pos,  u_light2Amb,  u_light2Diff,  u_light2Spec,  vNormal.xyz,    ambient,  diffuse,  specular );\n" +
+//                                "if (u_light3Type >= 0)  AddLight( u_light3Type,  u_light3Pos,  u_light3Amb,  u_light3Diff,  u_light3Spec,  vNormal.xyz,    ambient,  diffuse,  specular );\n" +
+//                              fShader_B;
                     fShader = fShader_A + 
-                                "if (u_light0Type >= 0)  AddLight( u_light0Type,  u_light0Pos,  u_light0Amb,  u_light0Diff,  u_light0Spec,  vNormal.xyz,    ambient,  diffuse,  specular );\n" +
-                                "if (u_light1Type >= 0)  AddLight( u_light1Type,  u_light1Pos,  u_light1Amb,  u_light1Diff,  u_light1Spec,  vNormal.xyz,    ambient,  diffuse,  specular );\n" +
-                                "if (u_light2Type >= 0)  AddLight( u_light2Type,  u_light2Pos,  u_light2Amb,  u_light2Diff,  u_light2Spec,  vNormal.xyz,    ambient,  diffuse,  specular );\n" +
-                                "if (u_light3Type >= 0)  AddLight( u_light3Type,  u_light3Pos,  u_light3Amb,  u_light3Diff,  u_light3Spec,  vNormal.xyz,    ambient,  diffuse,  specular );\n" +
+                                "if (u_light0Type == 0)  AddLight( u_light0Type,  u_light0Pos,  u_light0Amb,  u_light0Diff,  u_light0Spec,  vNormal.xyz,    ambient,  diffuse,  specular );\n" +
                               fShader_B;
   
                     // redefine the shader source in the definition

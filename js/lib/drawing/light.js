@@ -47,16 +47,19 @@ var Light = function Light()
     ///////////////////////////////////////////////////////////////////////
     // Instance variables
     ///////////////////////////////////////////////////////////////////////
-    this._type = -1;    // undefined
+    this._type = this.LIGHT_TYPE_AMBIENT;    // ambient by default
 
     this._index = 0;        // the index of the set of uniform variables
-
-    this._rdgeLightNode = RDGE.createLightNode("myLight");
 
     // all lights have an ambient, diffuse and specular component
     this._ambient  = [0.2, 0.2, 0.2,  1.0];
     this._diffuse  = [0.6, 0.6, 0.6,  1.0];
     this._specular = [1.0, 1.0, 1.0,  1.0];
+
+    this._rdgeLightNode = RDGE.createLightNode("myLight");
+    this._rdgeLightNode.setAmbientColor( this._ambient );
+    this._rdgeLightNode.setDiffuseColor( this._diffuse );
+    this._rdgeLightNode.setSpecularColor( this._specular );
 
     ///////////////////////////////////////////////////////////////////////
     // Property Accessors
@@ -68,9 +71,9 @@ var Light = function Light()
     this.getIndex       = function()    {  return this._index;              };
 
     this.setType        = function(t)   {  this._type = t;                  };
-    this.setAmbient     = function(a)   {  this._ambient  = a.slice();      };
-    this.setDiffuse     = function(d)   {  this._diffuse  = d.slice();      };
-    this.setSpecular    = function(s)   {  this._specular = s.slice();      };
+    this.setAmbient     = function(a)   {  this._ambient  = a.slice();      this._rdgeLightNode.setAmbientColor( this._ambient );      };
+    this.setDiffuse     = function(d)   {  this._diffuse  = d.slice();      this._rdgeLightNode.setDiffuseColor( this._diffuse );      };
+    this.setSpecular    = function(s)   {  this._specular = s.slice();      this._rdgeLightNode.setSpecularColor( this._specular );    };
     this.setIndex       = function(i)   {  this._index = i;                 };
 
     this.getRDGELightNode   = function()    {  return this._rdgeLightNode;  };
@@ -103,7 +106,9 @@ var Light = function Light()
     {
         if (this._type == this.LIGHT_TYPE_AMBIENT)
         {
-            RDGE.rdgeGlobalParameters["u_light" + this._index + "Amb"].set( this._ambient );
+            var name = "u_light" + this._index;
+            RDGE.rdgeGlobalParameters[name + "Type"].set( [this.getType()] );
+            RDGE.rdgeGlobalParameters[name +  "Amb"].set( this._ambient );
         }
     }
 };
