@@ -58,7 +58,8 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
     if(use3D) {
         this._useWebGL = use3D;
     }
-
+	
+	// testing from ridge
     this._canvas = canvas;
     if (this._useWebGL)
     {
