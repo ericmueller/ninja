@@ -284,7 +284,7 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
     {
         if (!dt)  dt = 0.2;
 
-        dt = 0.01;  // use our own internal throttle
+        dt = 0.1;  // use our own internal throttle
         this.elapsed += dt;
 
         if (this._useWebGL)
@@ -295,8 +295,11 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
             // orbit the light nodes around the boxes
             //this.light.setPosition([1.2*Math.cos(this.elapsed*2.0), 1.2*Math.sin(this.elapsed*2.0), 1.2*Math.cos(this.elapsed*2.0)]);
             //this.light.setPosition([5 * Math.cos(this.elapsed), 5 * Math.sin(this.elapsed), 10]);
-            var light = this._lightArray[0].getRDGELightNode();
-            light.setPosition([5 * Math.cos(this.elapsed), 5 * Math.sin(this.elapsed), 0]);
+            //var light = this._lightArray[0].getRDGELightNode();
+            var light = this._lightArray[0];
+            light.setPosition([2 * Math.cos(this.elapsed), 2 * Math.sin(this.elapsed), 0]);
+            light.setUniforms();
+            //this.applyLights();
             //this.light2.setPosition([-1.2*Math.cos(this.elapsed*2.0), 1.2*Math.sin(this.elapsed*2.0), -1.2*Math.cos(this.elapsed)]);
         }
 

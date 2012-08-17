@@ -29,7 +29,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
-void CalculatePointLight( in vec3 lightPos,  in vec3 normal,  inout vec4 rtnAmbient,  inout vec4 rtnDiffuse,  inout vec4 rtnSpecular )
+void CalculatePointLight( in vec3 lightPos,  in vec3 normal, in vec4 lightAmb,  in vec4 lightDiff, in vec4 lightSpec,  inout vec4 rtnAmbient,  inout vec4 rtnDiffuse,  inout vec4 rtnSpecular )
 {
     vec4 ambient, diffuse, specular;
 
@@ -62,20 +62,20 @@ void CalculatePointLight( in vec3 lightPos,  in vec3 normal,  inout vec4 rtnAmbi
     else
         pf = pow(specularModifier, 76.0);
 
-    ambient = u_matAmbient * u_light0Amb;
+    ambient = u_matAmbient * lightAmb;
 
     //vec4 diffuse = u_matDiffuse * (colMapTexel + envMapTexel)*shadowCoef;
     //vec4 diffuse = u_matDiffuse * (colMapTexel + envMapTexel);
     diffuse = u_matDiffuse;
 
     //if (u_renderGlow <= 0.5) {
-        diffuse *= u_light0Diff;
+        diffuse *= lightDiff;
     //}
 
     #if defined( USE_ENV_MAP )
         specular = 2.0 * pf * envMapTexel;
     #else
-        specular = 2.0 * vec4(pf) * u_light0Spec;
+        specular = 2.0 * vec4(pf) * lightSpec;
     #endif
 
     rtnAmbient  += ambient;

@@ -499,7 +499,7 @@ var Material = function GLMaterial( world ) {
             if (usePoint) fShader += lightPoint;
             if (useDir)   fShader += lightDir;
             if (useSpot)  fShader += lightSpot;
-            fShader = fShader +
+            fShader = fShader + "\n" +
                         "void AddLight( in int lightType,  in vec3 lightPos, in vec3 lightDir,  in vec4 lightAmb,  in vec4 lightDiff,  in vec4 lightSpec,  in vec3 normal,  inout vec4 ambient,  inout vec4 diffuse,  inout vec4 specular ) {\n" +
                         "    if (lightType == 0)\n" +
                         "        ambient += lightAmb;\n";
@@ -511,7 +511,7 @@ var Material = function GLMaterial( world ) {
             if (usePoint)
             {
                 fShader +=  "    else if (lightType == 2)\n" +
-                            "        CalculatePointLight( lightPos,  normal,  ambient,  diffuse,  specular );\n";
+                            "        CalculatePointLight( lightPos,  normal,  lightAmb, lightDiff, lightSpec,  ambient,  diffuse,  specular );\n";
             }
             if (useSpot)
             {
