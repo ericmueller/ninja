@@ -29,7 +29,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
-void CalculateSpotLight( vec3 lightPos, vec3 normal,  inout vec4 ambient,  inout vec4 diffuse,  inout vec4 specular )
+void CalculateSpotLight( in vec3 lightPos, in vec3 normal,  in vec3 lightDir,  in vec4 lightAmb, in vec4 lightDiff, in vec4 lightSpec,  inout vec4 ambient,  inout vec4 diffuse,  inout vec4 specular )
 {
     float   nDotVP,
             nDotHV,
@@ -40,7 +40,7 @@ void CalculateSpotLight( vec3 lightPos, vec3 normal,  inout vec4 ambient,  inout
     vec3    vp;
 
     // compute the half vector
-    vec3 halfVector = normalize(vec3(0,0,1) + lightPos);
+    vec3 halfVector = normalize( vec3(0.0, 0.0, 1.0) - lightDir);
 
     // compute the vector from the surface to the light source
     vp = lightPos - vECPos.xyz;
@@ -62,18 +62,17 @@ void CalculateSpotLight( vec3 lightPos, vec3 normal,  inout vec4 ambient,  inout
     attenuation = clamp(1.0 - d * 0.01, 0.0, 1.0);
 
     // check if the point on the surface is within the cone of the light
-    vec3 spotDir = normalize( vec3(0.0, 0.0, -8.0) - lightPos );        // obviously, these 4 should be uniforms
-    float spotCosCutoff = 0.999,  spotAttenuation;
+    float spotCosCutoff = 0.8,  spotAttenuation;
     float spotExponent = 6.0;
-    spotDot = dot( -vp, spotDir );
+    spotDot = dot( -vp, lightDir );
     if (spotDot < spotCosCutoff)
         spotAttenuation = 0.0;
     else
         spotAttenuation = pow( spotDot, spotExponent );
     attenuation *= spotAttenuation;
 
-    ambient  += u_light0Amb  * attenuation;
-    diffuse  += u_light0Diff * attenuation * nDotVP;
-    specular += u_light0Spec * attenuation * pf;
+    ambient  += lightAmb  * attenuation;
+    diffuse  += lightDiff * attenuation * nDotVP;
+    specular += lightSpec * attenuation * pf;
 }
 

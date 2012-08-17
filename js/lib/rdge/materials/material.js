@@ -403,6 +403,7 @@ var Material = function GLMaterial( world ) {
             useAny   = false;
         var lights = this.getWorld().getLights();
         var nLights = lights.length;
+        var addDir = [false, false, false, false];
         for (var i=0;  i<nLights;  i++)
         {
             var light = lights[i];
@@ -411,8 +412,9 @@ var Material = function GLMaterial( world ) {
             if (type == light.LIGHT_TYPE_DIRECTIONAL)  useDir = true;
             if (type == light.LIGHT_TYPE_SPOT)   useSpot = true;
             if (type == light.LIGHT_TYPE_POINT)  usePoint = true;
+
+            addDir[i] = (  (type == light.LIGHT_TYPE_DIRECTIONAL) || (type == light.LIGHT_TYPE_SPOT) );
         }
-        var addDir = useDir || useSpot;
 
         var shader;
         var vShaderFile = def.shaders.defaultVShader;
@@ -485,7 +487,7 @@ var Material = function GLMaterial( world ) {
             var type = light.getType();
             var baseName = "u_light" + i;
             if ((type == light.LIGHT_TYPE_DIRECTIONAL) || (type == light.LIGHT_TYPE_SPOT))  lightVars += "uniform vec3 " + baseName + "Dir;\n";
-            if (type == light.LIGHT_TYPE_SPOT)  lightVars += "uniform vec3 " + baseName + "SpotCosCutoff;\n";
+            if (type == light.LIGHT_TYPE_SPOT)  lightVars += "uniform float " + baseName + "SpotCosCutoff;\n";
         }
 
         // find where to insert the light functions
@@ -516,7 +518,7 @@ var Material = function GLMaterial( world ) {
             if (useSpot)
             {
                 fShader +=  "    else if (lightType == 3)\n" +
-                            "        CalculateSpotLight(  lightPos,  lightDir,  normal,  ambient,  diffuse,  specular );\n";
+                            "        CalculateSpotLight(  lightPos,  normal,  lightDir,  lightAmb, lightDiff, lightSpec,  ambient,  diffuse,  specular );\n";
             }
             fShader = fShader + "}\n" + fShader_B;
 
@@ -530,31 +532,22 @@ var Material = function GLMaterial( world ) {
                     fShader = fShader_A + "vec3 lightDir = vec3(0.0, 0.0, 0.0);\n";
 
                     fShader += "\tif (u_light0Type >= 0)  {\n";
-                    if (addDir)  fShader += "\tif ((u_light0Type == 1) || (u_light0Type == 3))  lightDir = u_light0Dir;\n";
+                    if (addDir[0])  fShader += "\tif ((u_light0Type == 1) || (u_light0Type == 3))  lightDir = u_light0Dir;\n";
                     fShader += "\tAddLight( u_light0Type,  u_light0Pos,  lightDir,  u_light0Amb,  u_light0Diff,  u_light0Spec,  vNormal.xyz,    ambient,  diffuse,  specular ); }\n";
 
                     fShader += "\tif (u_light1Type >= 0)  {\n";
-                    if (addDir)  fShader += "\tif ((u_light1Type == 1) || (u_light1Type == 3))  lightDir = u_light1Dir;\n";
+                    if (addDir[1])  fShader += "\tif ((u_light1Type == 1) || (u_light1Type == 3))  lightDir = u_light1Dir;\n";
                     fShader += "\tAddLight( u_light1Type,  u_light1Pos,  lightDir,  u_light1Amb,  u_light1Diff,  u_light1Spec,  vNormal.xyz,    ambient,  diffuse,  specular ); }\n";
 
                     fShader += "\tif (u_light2Type >= 0)  {\n";
-                    if (addDir)  fShader += "\tif ((u_light2Type == 1) || (u_light2Type == 3))  lightDir = u_light2Dir;\n";
+                    if (addDir[2])  fShader += "\tif ((u_light2Type == 1) || (u_light2Type == 3))  lightDir = u_light2Dir;\n";
                     fShader += "\tAddLight( u_light2Type,  u_light2Pos,  lightDir,  u_light2Amb,  u_light2Diff,  u_light2Spec,  vNormal.xyz,    ambient,  diffuse,  specular ); }\n";
 
                     fShader += "\tif (u_light3Type >= 0)  {\n";
-                    if (addDir)  fShader += "\tif ((u_light3Type == 1) || (u_light3Type == 3))  lightDir = u_light3Dir;\n";
+                    if (addDir[3])  fShader += "\tif ((u_light3Type == 1) || (u_light3Type == 3))  lightDir = u_light3Dir;\n";
                     fShader += "\tAddLight( u_light3Type,  u_light3Pos,  lightDir,  u_light3Amb,  u_light3Diff,  u_light3Spec,  vNormal.xyz,    ambient,  diffuse,  specular ); }\n";
 
                     fShader += fShader_B;
-                                
-                                
-//                                "if (u_light1Type >= 0)  {  if ((u_light1Type == 1) || (u_light1Type == 3))  lightDir = u_light1Dir;  AddLight( u_light1Type,  u_light1Pos,  lightDir,  u_light1Amb,  u_light1Diff,  u_light1Spec,  vNormal.xyz,    ambient,  diffuse,  specular ); }\n" +
-//                                "if (u_light2Type >= 0)  {  if ((u_light2Type == 1) || (u_light2Type == 3))  lightDir = u_light2Dir;  AddLight( u_light2Type,  u_light2Pos,  lightDir,  u_light2Amb,  u_light2Diff,  u_light2Spec,  vNormal.xyz,    ambient,  diffuse,  specular ); }\n" +
-//                                "if (u_light3Type >= 0)  {  if ((u_light3Type == 1) || (u_light3Type == 3))  lightDir = u_light3Dir;  AddLight( u_light3Type,  u_light3Pos,  lightDir,  u_light3Amb,  u_light3Diff,  u_light3Spec,  vNormal.xyz,    ambient,  diffuse,  specular ); }\n" +
-//                              fShader_B;
-//                fShader = fShader_A + 
-//                            "if (u_light0Type == 0)  AddLight( u_light0Type,  u_light0Pos,  u_light0Amb,  u_light0Diff,  u_light0Spec,  vNormal.xyz,    ambient,  diffuse,  specular );\n" +
-//                            fShader_B;
   
                 // redefine the shader source in the definition
                 def.shaders.defaultVShader = vShader;
