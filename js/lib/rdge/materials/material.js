@@ -396,8 +396,25 @@ var Material = function GLMaterial( world ) {
     ///////////////////////////////////////////////////////////////////////
     this.buildShader = function( def )
     {
-        var shader;
+        // determine the light types being used
+        var useDir  = false,
+            useSpot = false,
+            usePoint = false,
+            useAny   = false;
+        var lights = this.getWorld().getLights();
+        var nLights = lights.length;
+        for (var i=0;  i<nLights;  i++)
+        {
+            var light = lights[i];
+            var type = light.getType();
+            if (type != light.LIGHT_TYPE_UNDEFINED)  useAny = true;
+            if (type == light.LIGHT_TYPE_DIRECTIONAL)  useDir = true;
+            if (type == light.LIGHT_TYPE_SPOT)   useSpot = true;
+            if (type == light.LIGHT_TYPE_POINT)  usePoint = true;
+        }
+        var addDir = useDir || useSpot;
 
+        var shader;
         var vShaderFile = def.shaders.defaultVShader;
         var fShaderFile = def.shaders.defaultFShader;
 
@@ -407,98 +424,156 @@ var Material = function GLMaterial( world ) {
         r.send(null);
         if (r.status == 200)
             vShader = r.responseText;
+        else
+            throw new Error( "Could not open vertex shader glsl file, " + vShaderFile );
 
         var r2 = new XMLHttpRequest();
         r2.open('GET', fShaderFile, false);
         r2.send(null);
         if (r2.status == 200)
             fShader = r2.responseText;
+        else
+            throw new Error( "Could not open fragment shader glsl file, " + fShaderFile );
 
-        var lightVars;
+        var lightVars, lightDir, lightPoint, lightSpot;
+
         var r3 = new XMLHttpRequest();
         r3.open('GET', "assets/shaders/LightVars.glsl", false);
         r3.send(null);
         if (r3.status == 200)
              lightVars = r3.responseText;
+        else
+            throw new Error( "Could not open glsl light variable definition file" );
 
-        var lightDir;
-        var r4 = new XMLHttpRequest();
-        r4.open('GET', "assets/shaders/LightDirectional.glsl", false);
-        r4.send(null);
-        if (r4.status == 200)
-             lightDir = r4.responseText;
-
-        var lightPoint;
-        var r5 = new XMLHttpRequest();
-        r5.open('GET', "assets/shaders/LightPoint.glsl", false);
-        r5.send(null);
-        if (r5.status == 200)
-             lightPoint = r5.responseText;
-
-        var lightSpot;
-        var r6 = new XMLHttpRequest();
-        r6.open('GET', "assets/shaders/LightSpot.glsl", false);
-        r6.send(null);
-        if (r6.status == 200)
-             lightSpot = r6.responseText;
-
-        if ( vShader && fShader && lightVars && lightDir && lightPoint && lightSpot )
+        if (useDir)
         {
-            // find where to insert the light functions
-            var lightSubStr = "// ADD LIGHT FUNCTIONS HERE";
-            var index = fShader.indexOf( lightSubStr );
+            var r4 = new XMLHttpRequest();
+            r4.open('GET', "assets/shaders/LightDirectional.glsl", false);
+            r4.send(null);
+            if (r4.status == 200)
+                 lightDir = r4.responseText;
+            else
+                throw new Error( "Could not open glsl Directional Light definition file" );
+        }
+    
+        if (usePoint)
+        {
+            var r5 = new XMLHttpRequest();
+            r5.open('GET', "assets/shaders/LightPoint.glsl", false);
+            r5.send(null);
+            if (r5.status == 200)
+                    lightPoint = r5.responseText;
+            else
+                throw new Error( "Could not open glsl Point Light definition file" );
+        }
+
+        if (useSpot)
+        {
+            var r6 = new XMLHttpRequest();
+            r6.open('GET', "assets/shaders/LightSpot.glsl", false);
+            r6.send(null);
+            if (r6.status == 200)
+                 lightSpot = r6.responseText;
+            else
+            throw new Error( "Could not open glsl Spot Light definition file" );
+        }
+
+        // add the light specific uniforms
+        for (var i=0;  i<nLights;  i++)
+        {
+            var light = lights[i];
+            var type = light.getType();
+            var baseName = "u_light" + i;
+            if ((type == light.LIGHT_TYPE_DIRECTIONAL) || (type == light.LIGHT_TYPE_SPOT))  lightVars += "uniform vec3 " + baseName + "Dir;\n";
+            if (type == light.LIGHT_TYPE_SPOT)  lightVars += "uniform vec3 " + baseName + "SpotCosCutoff;\n";
+        }
+
+        // find where to insert the light functions
+        var lightSubStr = "// ADD LIGHT FUNCTIONS HERE";
+        var index = fShader.indexOf( lightSubStr );
+        if (index >= 0)
+        {
+            var fShader_A = fShader.substr( 0, index ),
+                fShader_B = fShader.substr( index + lightSubStr.length );
+            fShader = fShader_A + lightVars;
+            if (usePoint) fShader += lightPoint;
+            if (useDir)   fShader += lightDir;
+            if (useSpot)  fShader += lightSpot;
+            fShader = fShader +
+                        "void AddLight( in int lightType,  in vec3 lightPos, in vec3 lightDir,  in vec4 lightAmb,  in vec4 lightDiff,  in vec4 lightSpec,  in vec3 normal,  inout vec4 ambient,  inout vec4 diffuse,  inout vec4 specular ) {\n" +
+                        "    if (lightType == 0)\n" +
+                        "        ambient += lightAmb;\n";
+            if (useDir)
+            {
+                fShader +=  "    else if (lightType == 1)\n" +
+                            "        CalculateDirectionalLight(      lightDir,  normal,  ambient,  diffuse,  specular );\n";
+            }
+            if (usePoint)
+            {
+                fShader +=  "    else if (lightType == 2)\n" +
+                            "        CalculatePointLight( lightPos,  normal,  ambient,  diffuse,  specular );\n";
+            }
+            if (useSpot)
+            {
+                fShader +=  "    else if (lightType == 3)\n" +
+                            "        CalculateSpotLight(  lightPos,  lightDir,  normal,  ambient,  diffuse,  specular );\n";
+            }
+            fShader = fShader + "}\n" + fShader_B;
+
+            lightSubStr = "// ADD LIGHT CALLS HERE";
+            index = fShader.indexOf( lightSubStr );
             if (index >= 0)
             {
-                var fShader_A = fShader.substr( 0, index ),
-                    fShader_B = fShader.substr( index + lightSubStr.length );
-                fShader = fShader_A + lightVars + lightDir + lightPoint + lightSpot + 
-                            "void AddLight( in int lightType,  in vec3 lightPos,  in vec4 lightAmb,  in vec4 lightDiff,  in vec4 lightSpec,  in vec3 normal,  inout vec4 ambient,  inout vec4 diffuse,  inout vec4 specular ) {\n" +
-                            "    if (lightType == 0)\n" +
-                            "        ambient += lightAmb;\n" +
-                            "    else if (lightType == 1)\n" +
-                            "        CalculateDirectionalLight(      normal,  ambient,  diffuse,  specular );\n" +
-                            "    else if (lightType == 2)\n" +
-                            "        CalculatePointLight( lightPos,  normal,  ambient,  diffuse,  specular );\n" +
-                            "    else if (lightType == 3)\n" +
-                            "        CalculateSpotLight(  lightPos,  normal,  ambient,  diffuse,  specular );\n" +
-                            "}\n" +
-                fShader_B;
+                fShader_A = fShader.substr( 0, index );
+                fShader_B = fShader.substr( index + lightSubStr.length );
 
-                lightSubStr = "// ADD LIGHT CALLS HERE";
-                index = fShader.indexOf( lightSubStr );
-                if (index >= 0)
-                {
-                    fShader_A = fShader.substr( 0, index );
-                    fShader_B = fShader.substr( index + lightSubStr.length );
-//                    fShader = fShader_A + 
-//                                "if (u_light0Type >= 0)  AddLight( u_light0Type,  u_light0Pos,  u_light0Amb,  u_light0Diff,  u_light0Spec,  vNormal.xyz,    ambient,  diffuse,  specular );\n" +
-//                                "if (u_light1Type >= 0)  AddLight( u_light1Type,  u_light1Pos,  u_light1Amb,  u_light1Diff,  u_light1Spec,  vNormal.xyz,    ambient,  diffuse,  specular );\n" +
-//                                "if (u_light2Type >= 0)  AddLight( u_light2Type,  u_light2Pos,  u_light2Amb,  u_light2Diff,  u_light2Spec,  vNormal.xyz,    ambient,  diffuse,  specular );\n" +
-//                                "if (u_light3Type >= 0)  AddLight( u_light3Type,  u_light3Pos,  u_light3Amb,  u_light3Diff,  u_light3Spec,  vNormal.xyz,    ambient,  diffuse,  specular );\n" +
+                    fShader = fShader_A + "vec3 lightDir = vec3(0.0, 0.0, 0.0);\n";
+
+                    fShader += "\tif (u_light0Type >= 0)  {\n";
+                    if (addDir)  fShader += "\tif ((u_light0Type == 1) || (u_light0Type == 3))  lightDir = u_light0Dir;\n";
+                    fShader += "\tAddLight( u_light0Type,  u_light0Pos,  lightDir,  u_light0Amb,  u_light0Diff,  u_light0Spec,  vNormal.xyz,    ambient,  diffuse,  specular ); }\n";
+
+                    fShader += "\tif (u_light1Type >= 0)  {\n";
+                    if (addDir)  fShader += "\tif ((u_light1Type == 1) || (u_light1Type == 3))  lightDir = u_light1Dir;\n";
+                    fShader += "\tAddLight( u_light1Type,  u_light1Pos,  lightDir,  u_light1Amb,  u_light1Diff,  u_light1Spec,  vNormal.xyz,    ambient,  diffuse,  specular ); }\n";
+
+                    fShader += "\tif (u_light2Type >= 0)  {\n";
+                    if (addDir)  fShader += "\tif ((u_light2Type == 1) || (u_light2Type == 3))  lightDir = u_light2Dir;\n";
+                    fShader += "\tAddLight( u_light2Type,  u_light2Pos,  lightDir,  u_light2Amb,  u_light2Diff,  u_light2Spec,  vNormal.xyz,    ambient,  diffuse,  specular ); }\n";
+
+                    fShader += "\tif (u_light3Type >= 0)  {\n";
+                    if (addDir)  fShader += "\tif ((u_light3Type == 1) || (u_light3Type == 3))  lightDir = u_light3Dir;\n";
+                    fShader += "\tAddLight( u_light3Type,  u_light3Pos,  lightDir,  u_light3Amb,  u_light3Diff,  u_light3Spec,  vNormal.xyz,    ambient,  diffuse,  specular ); }\n";
+
+                    fShader += fShader_B;
+                                
+                                
+//                                "if (u_light1Type >= 0)  {  if ((u_light1Type == 1) || (u_light1Type == 3))  lightDir = u_light1Dir;  AddLight( u_light1Type,  u_light1Pos,  lightDir,  u_light1Amb,  u_light1Diff,  u_light1Spec,  vNormal.xyz,    ambient,  diffuse,  specular ); }\n" +
+//                                "if (u_light2Type >= 0)  {  if ((u_light2Type == 1) || (u_light2Type == 3))  lightDir = u_light2Dir;  AddLight( u_light2Type,  u_light2Pos,  lightDir,  u_light2Amb,  u_light2Diff,  u_light2Spec,  vNormal.xyz,    ambient,  diffuse,  specular ); }\n" +
+//                                "if (u_light3Type >= 0)  {  if ((u_light3Type == 1) || (u_light3Type == 3))  lightDir = u_light3Dir;  AddLight( u_light3Type,  u_light3Pos,  lightDir,  u_light3Amb,  u_light3Diff,  u_light3Spec,  vNormal.xyz,    ambient,  diffuse,  specular ); }\n" +
 //                              fShader_B;
-                    fShader = fShader_A + 
-                                "if (u_light0Type == 0)  AddLight( u_light0Type,  u_light0Pos,  u_light0Amb,  u_light0Diff,  u_light0Spec,  vNormal.xyz,    ambient,  diffuse,  specular );\n" +
-                              fShader_B;
+//                fShader = fShader_A + 
+//                            "if (u_light0Type == 0)  AddLight( u_light0Type,  u_light0Pos,  u_light0Amb,  u_light0Diff,  u_light0Spec,  vNormal.xyz,    ambient,  diffuse,  specular );\n" +
+//                            fShader_B;
   
-                    // redefine the shader source in the definition
-                    def.shaders.defaultVShader = vShader;
-                    def.shaders.defaultFShader = fShader;
+                // redefine the shader source in the definition
+                def.shaders.defaultVShader = vShader;
+                def.shaders.defaultFShader = fShader;
  
-                    // build output jshader
-                    shader = new RDGE.jshader();
-                    shader.def = def;
-                    // initialize the jshader
-                    try {
-                        shader.init();
-                    }
-                    catch (e) {
-                        console.log("error initializing shader: " + e);
-                    }
+                // build output jshader
+                shader = new RDGE.jshader();
+                shader.def = def;
+                // initialize the jshader
+                try {
+                    shader.init();
+                }
+                catch (e) {
+                    console.log("error initializing shader: " + e);
+                }
 
-                    // restore the definition
-                    def.shaders.defaultVShader = vShaderFile;
-                    def.shaders.defaultFShader = fShaderFile;
-              }
+                // restore the definition
+                def.shaders.defaultVShader = vShaderFile;
+                def.shaders.defaultFShader = fShaderFile;
             }
         }
 

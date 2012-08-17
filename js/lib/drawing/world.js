@@ -161,6 +161,8 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
 
     this.getRenderer            = function()        {  return this.renderer;            };
 
+    this.getLights              = function()        {  return this._lightArray;         };
+
     // Flag to play/pause animation at authortime
     this._previewAnimation = true;
 
@@ -242,15 +244,15 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
 //        this.addLight( light1 );
 
         var light2 = new PointLight();
-        light2.setPosition( [0.0, 0.0, 2.0] );
+        light2.setPosition( [0.0, 0.0, 0.0] );
         light2.setDiffuse( [0.0, 0.0, 1.0,  1.0] );
         this.addLight( light2 );
 
-        var light = new Light();
+//        var light = new Light();
         //light.setPosition( [0.0, 0.0, 2.0] );
-        light.setAmbient( [0.5, 0.1, 0.1,  1.0] );
-        light.setDiffuse( [0.0, 0.0, 1.0,  1.0] );
-        this.addLight( light );
+//        light.setAmbient( [0.5, 0.1, 0.1,  1.0] );
+//        light.setDiffuse( [0.0, 0.0, 1.0,  1.0] );
+//        this.addLight( light );
 
         // create a light transform
         var lightTr = RDGE.createTransformNode("lightTr");
@@ -294,7 +296,7 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
             //this.light.setPosition([1.2*Math.cos(this.elapsed*2.0), 1.2*Math.sin(this.elapsed*2.0), 1.2*Math.cos(this.elapsed*2.0)]);
             //this.light.setPosition([5 * Math.cos(this.elapsed), 5 * Math.sin(this.elapsed), 10]);
             var light = this._lightArray[0].getRDGELightNode();
-            light.setPosition([5 * Math.cos(this.elapsed), 5 * Math.sin(this.elapsed), 10]);
+            light.setPosition([5 * Math.cos(this.elapsed), 5 * Math.sin(this.elapsed), 0]);
             //this.light2.setPosition([-1.2*Math.cos(this.elapsed*2.0), 1.2*Math.sin(this.elapsed*2.0), -1.2*Math.cos(this.elapsed)]);
         }
 

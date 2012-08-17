@@ -38,12 +38,14 @@ uniform vec4 u_light0Spec;
 uniform  int u_light0Type;
 
 uniform vec3 u_light1Pos;
+uniform vec3 u_light1Dir;
 uniform vec4 u_light1Diff;
 uniform vec4 u_light1Amb;
 uniform vec4 u_light1Spec;
 uniform  int u_light1Type;
 
 uniform vec3 u_light2Pos;
+uniform vec3 u_light2Dir;
 uniform vec4 u_light2Diff;
 uniform vec4 u_light2Amb;
 uniform vec4 u_light2Spec;
@@ -51,9 +53,11 @@ uniform  int u_light2Type;
 
 uniform vec3 u_light3Pos;
 uniform vec4 u_light3Diff;
+uniform vec3 u_light3Dir;
 uniform vec4 u_light3Amb;
 uniform vec4 u_light3Spec;
 uniform  int u_light3Type;
+
 
 /*
 void AddLight( in int lightType,  in vec3 lightPos,  in vec4 lightAmb,  in vec4 lightDiff,  in vec4 lightSpec,  in vec3 normal,  inout vec4 ambient,  inout vec4 diffuse,  inout vec4 specular )

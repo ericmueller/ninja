@@ -29,13 +29,13 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
-void CalculateDirectionalLight( in vec3 normal,  inout vec4 ambient,  inout vec4 diffuse, inout vec4 specular )
+void CalculateDirectionalLight( in vec3 lightDir,  in vec3 normal,  inout vec4 ambient,  inout vec4 diffuse, inout vec4 specular )
 {
     float nDotVP;
     float nDotHV;
     float pf;
 
-    vec3 halfVector = normalize(vec3(0,0,1) + u_light0Pos);
+    vec3 halfVector = normalize(lightDir + u_light0Pos);
 
     vec3 mapNormal = texture2D(u_normalMap, vec2(vNormal.w, vECPos.w)).xyz * 2.0 - 1.0;
     mapNormal = normalize(mapNormal.x*vec3(normal.z, 0.0, -normal.x) + vec3(0.0, mapNormal.y, 0.0) + mapNormal.z*normal);

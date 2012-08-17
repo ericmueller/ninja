@@ -61,7 +61,7 @@ var DirectionalLight = function DirectionalLight()
         RDGE.rdgeGlobalParameters[name + "Diff"].set( this.getDiffuse() );
         RDGE.rdgeGlobalParameters[name + "Spec"].set( this.getSpecular() );
 
-        RDGE.rdgeGlobalParameters[name + "Pos"].set( vecUtils.vecNegate(3, this.getDirection()) );
+        RDGE.rdgeGlobalParameters[name + "Dir"].set( this.getDirection() );
     }
 };
 
