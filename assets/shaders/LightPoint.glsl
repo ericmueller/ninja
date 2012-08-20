@@ -51,7 +51,8 @@ void CalculatePointLight( in vec3 lightPos,  in vec3 normal, in vec4 lightAmb,  
 
     float attenuation = clamp(1.0 - lightDist * 0.01, 0.0, 1.0);
 
-    vec3 halfVec = normalize(lightDirection + vEyePos);
+    //vec3 halfVec = normalize(lightDirection + vEyePos);
+    vec3 halfVec = normalize( vec3(0.0, 0.0, 1.0) + lightDirection);
 
     float diffuseIntensity = max(0.0, dot(mapNormal, lightDirection));
     float specularModifier = max(0.0, dot(mapNormal, halfVec));

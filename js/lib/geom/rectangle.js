@@ -655,7 +655,7 @@ exports.Rectangle = Object.create(GeomObj, {
                 primArray = RectangleFill.create( ctr,  width, height,  tlRad, blRad,  brRad, trRad, material);
             }
 
-			console.log( "rectangle produced " + primArray.length + " fill primitives" );
+			//console.log( "rectangle produced " + primArray.length + " fill primitives" );
 
             return primArray;
         }

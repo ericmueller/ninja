@@ -87,9 +87,12 @@ var RadialGradientMaterial = function RadialGradientMaterial() {
         this.setWorld(world);
 
         // set up the shader
-        this._shader = new RDGE.jshader();
-        this._shader.def = radialGradientMaterialDef;
-        this._shader.init();
+//        this._shader = new RDGE.jshader();
+//        this._shader.def = radialGradientMaterialDef;
+//        this._shader.init();
+
+        // build the shader
+        this._shader = this.buildShader( radialGradientMaterialDef );
 
         // set up the material node
         this._materialNode = RDGE.createMaterialNode("radialGradientMaterial" + "_" + world.generateUniqueNodeID());

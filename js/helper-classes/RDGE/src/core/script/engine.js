@@ -297,7 +297,7 @@ RDGE.Engine.prototype.init = function (userInitState, userRunState, canvasObject
     this.defaultContext = new RDGE.RenderContext();
 
     this.defaultContext.uniforms = [
-        { 'name': "u_matAmbient", 'value': [0.02,0.02,0.02, 1.0] },
+        { 'name': "u_matAmbient", 'value': [0.2,0.2,0.2, 1.0] },
         { 'name': "u_matDiffuse", 'value': [1.0, 1.0, 1.0, 1.0] },
         { 'name': "u_matSpecular", 'value': [1.0, 1.0, 1.0, 1.0] },
         { 'name': "u_matShininess", 'value': [128.0] },

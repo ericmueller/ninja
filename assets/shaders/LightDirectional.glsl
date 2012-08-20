@@ -35,23 +35,21 @@ void CalculateDirectionalLight( in vec3 lightDir,  in vec3 normal, in vec4 light
     float nDotHV;
     float pf;
 
-    vec3 halfVector = normalize(lightDir + vEyePos);
+    vec3 halfVector = normalize( vec3(0.0, 0.0, 1.0) - lightDir);
 
     vec3 mapNormal = texture2D(u_normalMap, vec2(vNormal.w, vECPos.w)).xyz * 2.0 - 1.0;
     mapNormal = normalize(mapNormal.x*vec3(normal.z, 0.0, -normal.x) + vec3(0.0, mapNormal.y, 0.0) + mapNormal.z*normal);
 
-    nDotVP = max( 0.0,  dot(mapNormal, normalize(lightDir)));
-    nDotHV = max( 0.0,  dot(mapNormal, halfVector));
+    nDotVP = max( 0.0,  -dot(mapNormal, normalize(lightDir)));
+    nDotHV = max( 0.0,   dot(mapNormal, halfVector));
 
     if (nDotVP == 0.0)
         pf = 0.0;
     else
         pf = pow(nDotHV, u_matShininess);
 
-    //ambient  += u_matAmbient * lightAmb;
-    //diffuse  += lightDiff * nDotVP;
-    //specular += 2.0 * vec4(pf) * lightSpec;
-    if (u_matAmbient == vec4(0.02, 0.02, 0.02,  1.0))  ambient = vec4( 1.0, 0.0, 1.0,  1.0 );
-    else ambient += u_matAmbient * lightAmb;
+    ambient  += u_matAmbient * lightAmb;
+    diffuse  += lightDiff * nDotVP;
+    specular += 2.0 * vec4(pf) * lightSpec;
 }
 

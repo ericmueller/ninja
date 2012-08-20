@@ -50,7 +50,7 @@ void CalculateSpotLight( in vec3 lightPos, in vec3 normal,  in vec3 lightDir,  i
     vec3 mapNormal = texture2D(u_normalMap, vec2(vNormal.w, vECPos.w)).xyz * 2.0 - 1.0;
     mapNormal = normalize(mapNormal.x*vec3(normal.z, 0.0, -normal.x) + vec3(0.0, mapNormal.y, 0.0) + mapNormal.z*normal);
 
-    nDotVP = max( 0.0,  dot(mapNormal, normalize(lightPos)));
+    nDotVP = max( 0.0,  -dot(mapNormal, normalize(lightDir)));
     nDotHV = max( 0.0,  dot(mapNormal, halfVector));
 
     if (nDotVP == 0.0)

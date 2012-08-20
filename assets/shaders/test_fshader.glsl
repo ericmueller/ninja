@@ -33,10 +33,6 @@ POSSIBILITY OF SUCH DAMAGE.
 precision highp float;
 #endif
 
-//#define USE_POINT_LIGHT 1
-//#define USE_DIRECTIONAL_LIGHT 2
-#define USE_SPOT_LIGHT 3
-
 
 // diffuse map
 uniform sampler2D u_colMap;
