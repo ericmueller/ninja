@@ -243,12 +243,12 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
 //        light1.setType( light1.LIGHT_TYPE_AMBIENT );
 //        this.addLight( light1 );
 
-        var light2 = new SpotLight();
-        light2.setPosition( [0.0, 0.0, 0.0] );
+        var light2 = new DirectionalLight();
+        if (light2.setPosition)   light2.setPosition( [0.0, 0.0, 0.0] );
+        if (light2.setDirection)  light2.setDirection( [0.0, 0.0, -1.0] );
         light2.setAmbient( [1.0, 0.0, 0.0,  1.0] );
         light2.setDiffuse( [0.0, 1.0, 0.0,  1.0] );
         light2.setSpecular( [0.0, 0.0, 1.0,  1.0] );
-        light2.setDirection( [0.0, 0.0, -1.0] );
         this.addLight( light2 );
 
 //        var light = new Light();
@@ -300,8 +300,8 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
             //this.light.setPosition([5 * Math.cos(this.elapsed), 5 * Math.sin(this.elapsed), 10]);
             //var light = this._lightArray[0].getRDGELightNode();
             var light = this._lightArray[0];
-            light.setPosition([2 * Math.cos(this.elapsed), 2 * Math.sin(this.elapsed), 0]);
-            light.setDirection( [0.0, 0.0,  -1.0] );
+            if (light.setPosition)   light.setPosition([2 * Math.cos(this.elapsed), 2 * Math.sin(this.elapsed), 0]);
+            if (light.setDirection)  light.setDirection( [0.0, 0.0,  -1.0] );
             light.setUniforms();
             //this.applyLights();
             //this.light2.setPosition([-1.2*Math.cos(this.elapsed*2.0), 1.2*Math.sin(this.elapsed*2.0), -1.2*Math.cos(this.elapsed)]);

@@ -508,7 +508,7 @@ var Material = function GLMaterial( world ) {
             if (useDir)
             {
                 fShader +=  "    else if (lightType == 1)\n" +
-                            "        CalculateDirectionalLight(      lightDir,  normal,  ambient,  diffuse,  specular );\n";
+                            "        CalculateDirectionalLight(      lightDir,  normal,  lightAmb, lightDiff, lightSpec,  ambient,  diffuse,  specular );\n";
             }
             if (usePoint)
             {

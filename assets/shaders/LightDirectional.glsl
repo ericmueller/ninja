@@ -29,18 +29,18 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
-void CalculateDirectionalLight( in vec3 lightDir,  in vec3 normal,  inout vec4 ambient,  inout vec4 diffuse, inout vec4 specular )
+void CalculateDirectionalLight( in vec3 lightDir,  in vec3 normal, in vec4 lightAmb,  in vec4 lightDiff, in vec4 lightSpec,  inout vec4 ambient,  inout vec4 diffuse, inout vec4 specular )
 {
     float nDotVP;
     float nDotHV;
     float pf;
 
-    vec3 halfVector = normalize(lightDir + u_light0Pos);
+    vec3 halfVector = normalize(lightDir + vEyePos);
 
     vec3 mapNormal = texture2D(u_normalMap, vec2(vNormal.w, vECPos.w)).xyz * 2.0 - 1.0;
     mapNormal = normalize(mapNormal.x*vec3(normal.z, 0.0, -normal.x) + vec3(0.0, mapNormal.y, 0.0) + mapNormal.z*normal);
 
-    nDotVP = max( 0.0,  dot(mapNormal, normalize(u_light0Pos)));
+    nDotVP = max( 0.0,  dot(mapNormal, normalize(lightDir)));
     nDotHV = max( 0.0,  dot(mapNormal, halfVector));
 
     if (nDotVP == 0.0)
@@ -48,8 +48,10 @@ void CalculateDirectionalLight( in vec3 lightDir,  in vec3 normal,  inout vec4 a
     else
         pf = pow(nDotHV, u_matShininess);
 
-    ambient  += u_matAmbient * u_light0Amb;
-    diffuse  += u_light0Diff * nDotVP;
-    specular += 2.0 * vec4(pf) * u_light0Spec;
+    //ambient  += u_matAmbient * lightAmb;
+    //diffuse  += lightDiff * nDotVP;
+    //specular += 2.0 * vec4(pf) * lightSpec;
+    if (u_matAmbient == vec4(0.02, 0.02, 0.02,  1.0))  ambient = vec4( 1.0, 0.0, 1.0,  1.0 );
+    else ambient += u_matAmbient * lightAmb;
 }
 
