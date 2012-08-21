@@ -55,6 +55,8 @@ var WaterMaterial = function WaterMaterial()
     this.isAnimated         = function()            {  return true;             };
     this.getShaderDef       = function()            {  return waterMaterialDef; };
 
+    //this.ignoreLights       = function()            {  return false;            }
+
     ///////////////////////////////////////////////////////////////////////
     // Properties
     ///////////////////////////////////////////////////////////////////////
@@ -86,9 +88,10 @@ var WaterMaterial = function WaterMaterial()
         if (world) this.setWorld(world);
 
         // set up the shader
-        this._shader = new RDGE.jshader();
-        this._shader.def = waterMaterialDef;
-        this._shader.init();
+//        this._shader = new RDGE.jshader();
+//        this._shader.def = waterMaterialDef;
+//        this._shader.init();
+        this._shader = this.buildShader( waterMaterialDef );
 
         // set up the material node
         this._materialNode = RDGE.createMaterialNode("waterMaterial" + "_" + world.generateUniqueNodeID());
@@ -186,9 +189,10 @@ var BlueSkyMaterial = function BlueSkyMaterial()
         if (world) this.setWorld(world);
 
         // set up the shader
-        this._shader = new RDGE.jshader();
-        this._shader.def = waterMaterialDef;
-        this._shader.init();
+//        this._shader = new RDGE.jshader();
+//        this._shader.def = waterMaterialDef;
+//        this._shader.init();
+        this._shader = this.buildShader( waterMaterialDef );
 
         // set up the material node
         this._materialNode = RDGE.createMaterialNode("blueSkyMaterial" + "_" + world.generateUniqueNodeID());

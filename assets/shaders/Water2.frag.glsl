@@ -30,6 +30,9 @@ uniform float u_delta;
 uniform float u_intensity;
 uniform float u_speed;
 
+varying vec3 vNormal;
+varying vec3 vECPos;
+
 //---------- crystals effect
 
   float col(vec2 coord)
@@ -51,6 +54,9 @@ uniform float u_speed;
 
 //---------- main
 
+// ADD LIGHT FUNCTIONS HERE
+
+
 void main(void)
 {
 vec2 p = (gl_FragCoord.xy) / u_resolution.xy, c1 = p, c2 = p;
@@ -66,7 +72,12 @@ float dy = u_emboss*(cc1-col(c2))/u_delta;
 c1.x += dx;
 c1.y = -(c1.y+dy);
 
+vec4 ambient = vec4(0,0,0,0),  diffuse = vec4(0,0,0,0),  specular = vec4(0,0,0,0);
+// ADD LIGHT CALLS HERE
+
+
 float alpha = 1.+dot(dx,dy)*intence;
-gl_FragColor = texture2D(u_tex0,c1)*(alpha);
+vec4 color = texture2D(u_tex0,c1)*(alpha);
+gl_FragColor = gl_FragColor = color + ((color*(ambient + diffuse)) + specular);
 
 }

@@ -216,33 +216,6 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
         this.myScene = new RDGE.SceneGraph();
 
         // create some lights
-        // light 1
-//        this.light = RDGE.createLightNode("myLight");
-//        this.light.setPosition([0,0,1.2]);
-//        this.light.setDiffuseColor([0.75,0.9,1.0,1.0]);
-//        this.light.setAmbientColor( [0.5, 0.5, 0.5,  1.0]);
-//        this.light.setSpecularColor( [0.4, 0.4, 0.4,  1.0]);
-//        this.light.lightType = new Light().LIGHT_TYPE_SPOT;
-
-//        // light 2
-//        this.light.setPosition([-3,0,1.2]);
-//        this.light2 = RDGE.createLightNode("myLight2");
-//        this.light2.setAmbientColor([ 0.2, 0.2, 0.2,  1.0]);
-//        this.light.setDiffuseColor([0.75,0.9,1.0,1.0]);
-//        this.light.setSpecularColor( [0.4, 0.4, 0.4,  1.0]);
-//        this.light2.lightType = new Light().LIGHT_TYPE_POINT;
-
-//        // enable light 0, disable the rest
-//        RDGE.rdgeGlobalParameters.u_light0Type.set( [this.light.lightType] );
-//        RDGE.rdgeGlobalParameters.u_light1Type.set( [this.light2.lightType] );
-//        RDGE.rdgeGlobalParameters.u_light2Type.set( [-1] );
-//        RDGE.rdgeGlobalParameters.u_light3Type.set( [-1] );
-
-//        var light1 = new Light();
-//        light1.setAmbient( [1.0, 0.0, 0.0,  1.0] );
-//        light1.setType( light1.LIGHT_TYPE_AMBIENT );
-//        this.addLight( light1 );
-
         var light2 = new SpotLight();
         if (light2.setPosition)   light2.setPosition( [0.0, 0.0, -4.0] );
         if (light2.setDirection)
@@ -256,17 +229,17 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
         light2.setSpecular( [0.5, 0.5, 0.5,  1.0] );
         this.addLight( light2 );
 
-//        var light = new Light();
-//        if (light.setPosition)   light.setPosition( [0.0, 0.0, 0.0] );
-//        if (light.setDirection)
-//        {
-//            var ld = [0, 0, -1];
-//            vecUtils.vecNormalize( 3, ld );
-//            light.setDirection( ld );
-//        }
-//        light.setAmbient( [0.5, 0.0, 0.0,  1.0] );
-//        light.setDiffuse( [0.1, 0.1, 0.1,  1.0] );
-//        this.addLight( light );
+        var light = new Light();
+        if (light.setPosition)   light.setPosition( [0.0, 0.0, 0.0] );
+        if (light.setDirection)
+        {
+            var ld = [0, 0, -1];
+            vecUtils.vecNormalize( 3, ld );
+            light.setDirection( ld );
+        }
+        light.setAmbient( [0.5, 0.0, 0.0,  1.0] );
+        light.setDiffuse( [0.1, 0.1, 0.1,  1.0] );
+        this.addLight( light );
 
         // create a light transform
         var lightTr = RDGE.createTransformNode("lightTr");
@@ -303,19 +276,22 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
 
         if (this._useWebGL)
         {
-            // changed the global position uniform of light 0, another way to change behavior of a light
-            //RDGE.rdgeGlobalParameters.u_light0Pos.set([5 * Math.cos(this.elapsed), 5 * Math.sin(this.elapsed), 10]);
+            if (this._lightArray && (this._lightArray.length > 0))
+            {
+//            // changed the global position uniform of light 0, another way to change behavior of a light
+//            //RDGE.rdgeGlobalParameters.u_light0Pos.set([5 * Math.cos(this.elapsed), 5 * Math.sin(this.elapsed), 10]);
 
-            // orbit the light nodes around the boxes
-            //this.light.setPosition([1.2*Math.cos(this.elapsed*2.0), 1.2*Math.sin(this.elapsed*2.0), 1.2*Math.cos(this.elapsed*2.0)]);
-            //this.light.setPosition([5 * Math.cos(this.elapsed), 5 * Math.sin(this.elapsed), 10]);
-            //var light = this._lightArray[0].getRDGELightNode();
-            var light = this._lightArray[0];
-            if (light.setPosition)   light.setPosition([2 * Math.cos(this.elapsed), 2 * Math.sin(this.elapsed), -4]);
-            //if (light.setDirection)  light.setDirection( vecUtils.vecNormalize(3, [Math.cos(this.elapsed), Math.sin(this.elapsed), -1]) );
-            light.setUniforms();
-            //this.applyLights();
-            //this.light2.setPosition([-1.2*Math.cos(this.elapsed*2.0), 1.2*Math.sin(this.elapsed*2.0), -1.2*Math.cos(this.elapsed)]);
+//            // orbit the light nodes around the boxes
+//            //this.light.setPosition([1.2*Math.cos(this.elapsed*2.0), 1.2*Math.sin(this.elapsed*2.0), 1.2*Math.cos(this.elapsed*2.0)]);
+//            //this.light.setPosition([5 * Math.cos(this.elapsed), 5 * Math.sin(this.elapsed), 10]);
+//            //var light = this._lightArray[0].getRDGELightNode();
+              var light = this._lightArray[0];
+              if (light.setPosition)   light.setPosition([2 * Math.cos(this.elapsed), 2 * Math.sin(this.elapsed), -4]);
+              //if (light.setDirection)  light.setDirection( vecUtils.vecNormalize(3, [Math.cos(this.elapsed), Math.sin(this.elapsed), -1]) );
+              light.setUniforms();
+//            //this.applyLights();
+//            //this.light2.setPosition([-1.2*Math.cos(this.elapsed*2.0), 1.2*Math.sin(this.elapsed*2.0), -1.2*Math.cos(this.elapsed)]);
+            }
         }
 
         this.updateMaterials( this.getGeomRoot(), this.elapsed );
@@ -346,7 +322,8 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
                     {
                         this._firstRender = false;
 
-                        if (!this.hasAnimatedMaterials() || !this._previewAnimation)
+                        var anythingAnimated = (this.hasAnimatedMaterials() || this.hasAnimatedLights());
+                        if ( !anythingAnimated || !this._previewAnimation )
                         {
                             this._canvas.task.stop();
                             //this._renderCount = 10;
@@ -766,6 +743,23 @@ World.prototype.addLight = function( light )
 
     light.setIndex( this._lightArray.length );
     this._lightArray.push( light );
+}
+
+World.prototype.hasAnimatedLights = function()
+{
+    // NOTE:  this function is incomplete - currently, lights have animation 
+    // if there is either a directional, point, or spot light in the scene
+
+    var nLights = this._lightArray.length;
+    for (var i=0;  i<nLights;  i++)
+    {
+        var light = this._lightArray[i];
+        var type = light.getType();
+        if ((type === light.LIGHT_TYPE_DIRECTIONAL) || (type === light.LIGHT_TYPE_POINT) || (type === light.LIGHT_TYPE_SPOT))
+            return true;
+    }
+
+    return false;
 }
 
 World.prototype.applyLights = function()

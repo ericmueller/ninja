@@ -36,7 +36,17 @@ precision highp float;
 
 
 uniform vec4 color;
+varying vec3 vNormal;
+varying vec3 vECPos;
+
+// ADD LIGHT FUNCTIONS HERE
+
 
 void main() {
-    gl_FragColor = color;
+
+    vec4 ambient = vec4(0,0,0,0),  diffuse = vec4(0,0,0,0),  specular = vec4(0,0,0,0);
+    // ADD LIGHT CALLS HERE
+
+    gl_FragColor = color + ((color*(ambient + diffuse)) + specular);
+    //gl_FragColor = color;
 }

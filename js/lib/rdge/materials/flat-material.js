@@ -52,6 +52,8 @@ var FlatMaterial = function FlatMaterial()
     this.isAnimated = function ()           { return false;     };
     this.getTechniqueName   = function()    {  return 'colorMe' };
 
+    //this.ignoreLights   = function()  {  return false;  }
+
     ///////////////////////////////////////////////////////////////////////
     // Methods
     ///////////////////////////////////////////////////////////////////////
@@ -64,9 +66,10 @@ var FlatMaterial = function FlatMaterial()
             this.setWorld(world);
 
             // set up the shader
-            this._shader = new RDGE.jshader();
-            this._shader.def = flatShaderDef;
-            this._shader.init();
+//            this._shader = new RDGE.jshader();
+//            this._shader.def = flatShaderDef;
+//            this._shader.init();
+            this._shader = this.buildShader(flatShaderDef);
 
             // set up the material node
             this._materialNode = RDGE.createMaterialNode("flatMaterial_" + world.generateUniqueNodeID());

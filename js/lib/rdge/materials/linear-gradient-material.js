@@ -56,7 +56,8 @@ var LinearGradientMaterial = function LinearGradientMaterial() {
     ///////////////////////////////////////////////////////////////////////
     // Property Accessors
     ///////////////////////////////////////////////////////////////////////
-    this.getShaderDef       = function()            {  return linearGradientMaterialDef;    }
+    this.getShaderDef       = function()            {  return linearGradientMaterialDef;    };
+    //this.ignoreLights       = function()            {  return false;                        };
 
     ///////////////////////////////////////////////////////////////////////
     // Material Property Accessors
@@ -87,9 +88,10 @@ var LinearGradientMaterial = function LinearGradientMaterial() {
         this.setWorld(world);
 
         // set up the shader
-        this._shader = new RDGE.jshader();
-        this._shader.def = linearGradientMaterialDef;
-        this._shader.init();
+//        this._shader = new RDGE.jshader();
+//        this._shader.def = linearGradientMaterialDef;
+//        this._shader.init();
+        this._shader = this.buildShader( linearGradientMaterialDef );
 
         // set up the material node
         this._materialNode = RDGE.createMaterialNode(this.getShaderName() + "_" + world.generateUniqueNodeID());

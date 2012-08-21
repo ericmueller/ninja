@@ -65,6 +65,8 @@ var TaperMaterial = function TaperMaterial()
 
 	this.getVertexDeformationTolerance = function()	{  return  this._propValues[this._propNames[7]];  };
 
+    //this.ignoreLights = function()  {  return false;  };
+
     ///////////////////////////////////////////////////////////////////////
     // Methods
     ///////////////////////////////////////////////////////////////////////
@@ -72,9 +74,7 @@ var TaperMaterial = function TaperMaterial()
         this.setWorld(world);
 
         // set up the shader
-        this._shader = new RDGE.jshader();
-        this._shader.def = taperShaderDef;
-        this._shader.init();
+        this._shader = this.buildShader( taperShaderDef );
 
         // set up the material node
         this._materialNode = RDGE.createMaterialNode("taperMaterial" + "_" + world.generateUniqueNodeID());

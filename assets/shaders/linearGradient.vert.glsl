@@ -64,12 +64,21 @@ uniform vec2    u_cos_sin_angle;
 //uniform int       u_colorCount;   // currently using 4
 uniform mat3 u_texTransform;
 
-varying     vec2 v_uv;
+varying vec2 v_uv;
+varying vec3 vNormal;
+varying vec3 vECPos;
 
 
 void main(void)
 {
-    gl_Position = u_projMatrix * u_mvMatrix * vec4(vert,1.0) ;
+    //  position normals and vert
+    vECPos  = (u_mvMatrix*vec4(vert, 1.0)).xyz;
+    vNormal = (u_normalMatrix*vec4(normal, 0.0)).xyz;
+
+    //  pass along the geo
+    gl_Position = u_projMatrix * vec4(vECPos, 1.0);
+    
+    
     //v_uv = texcoord;
     vec3 tmp = u_texTransform * vec3( texcoord, 1.0);
     v_uv = tmp.xy;

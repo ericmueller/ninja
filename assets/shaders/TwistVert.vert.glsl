@@ -57,10 +57,13 @@ uniform vec4 color;
 uniform mat4 u_mvMatrix;
 uniform mat4 u_projMatrix;
 uniform mat4 u_worldMatrix;
+uniform mat4 u_normalMatrix;
 
 //varying vec4 v_color;
 varying float v_zNormal;
 varying vec2 v_texcoord;
+varying vec3    vNormal;
+varying vec3    vECPos;
 
 
 float GetAngle( float t )
@@ -111,5 +114,8 @@ void main(void)
         v_zNormal   = -nrm.z;
     }
 
-    gl_Position = u_projMatrix * u_mvMatrix * vec4(pos,1.0) ;
+    //  position normals and vert
+    vECPos  = (u_mvMatrix*vec4(pos, 1.0)).xyz;
+    vNormal = (u_normalMatrix*vec4(normal, 0.0)).xyz;
+    gl_Position = u_projMatrix * vec4(vECPos, 1.0);
 }

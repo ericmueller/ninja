@@ -55,6 +55,8 @@ var RadialBlurMaterial = function RadialBlurMaterial() {
     this.getShaderDef   = function()    {  return radialBlurMaterialDef;    };
     this.isAnimated     = function ()   { return true;                      };
 
+    //this.ignoreLights   = function()    {  return false;                    }
+
     ///////////////////////////////////////////////////////////////////////
     // Material Property Accessors
     ///////////////////////////////////////////////////////////////////////
@@ -76,9 +78,10 @@ var RadialBlurMaterial = function RadialBlurMaterial() {
         if (world) this.setWorld(world);
 
         // set up the shader
-        this._shader = new RDGE.jshader();
-        this._shader.def = radialBlurMaterialDef;
-        this._shader.init();
+//        this._shader = new RDGE.jshader();
+//        this._shader.def = radialBlurMaterialDef;
+//        this._shader.init();
+        this._shader = this.buildShader( radialBlurMaterialDef );
 
         // set up the material node
         this._materialNode = RDGE.createMaterialNode("radialBlurMaterial" + "_" + world.generateUniqueNodeID());

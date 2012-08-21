@@ -10,6 +10,11 @@ uniform float u_speed;
 uniform float u_xscale;
 uniform float u_yscale;
 
+varying vec3 vNormal;
+varying vec3 vECPos;
+
+// ADD LIGHT FUNCTIONS HERE
+
 void main(void)
 {
     vec2 halfres = u_resolution.xy/2.0;
@@ -23,7 +28,10 @@ void main(void)
 
     vec2 uv = gl_FragCoord.xy/u_resolution.xy+(cPos/cLength)*sin(cLength/30.0-time*10.0)/25.0;
 	uv.y = 1.0 - uv.y;
-    vec3 col = texture2D(u_tex0,uv).xyz*50.0/cLength;
+    vec4 color = vec4( texture2D(u_tex0,uv).xyz*50.0/cLength,  1.0);
 
-    gl_FragColor = vec4(col,1.0);
+    vec4 ambient = vec4(0,0,0,0),  diffuse = vec4(0,0,0,0),  specular = vec4(0,0,0,0);
+    // ADD LIGHT CALLS HERE
+
+    gl_FragColor = color + ((color*(ambient + diffuse)) + specular);
 }

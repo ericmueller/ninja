@@ -55,6 +55,12 @@ var BumpMetalMaterial = function BumpMetalMaterial() {
 
     this._speed = 1.0;
 
+    // bumpMetal meterial normally has a bump map
+    this.hasNormalMap   = function()  { return (this._propValues["u_normalMap"] && (this._propValues["u_normalMap"].length > 0));   }
+
+    // bump metal uses whatever lights are available.
+    this.ignoreLights   = function()  {  return false;  }
+
     ///////////////////////////////////////////////////////////////////////
     // Property Accessors
     ///////////////////////////////////////////////////////////////////////

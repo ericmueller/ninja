@@ -45,7 +45,11 @@ uniform float   u_colorStop4;
 uniform vec2    u_cos_sin_angle;
 //uniform int       u_colorCount;   // currently using 4
 
-varying         vec2 v_uv;
+varying vec2 v_uv;
+varying vec3 vNormal;
+varying vec3 vECPos;
+
+// ADD LIGHT FUNCTIONS HERE
 
 
 void main(void)
@@ -73,5 +77,8 @@ void main(void)
     else
         color = u_color4;
 
-    gl_FragColor =color;
+    vec4 ambient = vec4(0,0,0,0),  diffuse = vec4(0,0,0,0),  specular = vec4(0,0,0,0);
+    // ADD LIGHT CALLS HERE
+
+    gl_FragColor = color + ((color*(ambient + diffuse)) + specular);
 }

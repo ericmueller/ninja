@@ -37,8 +37,12 @@ void CalculateDirectionalLight( in vec3 lightDir,  in vec3 normal, in vec4 light
 
     vec3 halfVector = normalize( vec3(0.0, 0.0, 1.0) - lightDir);
 
-    vec3 mapNormal = texture2D(u_normalMap, vec2(vNormal.w, vECPos.w)).xyz * 2.0 - 1.0;
-    mapNormal = normalize(mapNormal.x*vec3(normal.z, 0.0, -normal.x) + vec3(0.0, mapNormal.y, 0.0) + mapNormal.z*normal);
+    #if defined (USE_NORMAL_MAP)
+        vec3 mapNormal = texture2D(u_normalMap, vec2(vNormal.w, vECPos.w)).xyz * 2.0 - 1.0;
+        mapNormal = normalize(mapNormal.x*vec3(normal.z, 0.0, -normal.x) + vec3(0.0, mapNormal.y, 0.0) + mapNormal.z*normal);
+    #else
+        vec3 mapNormal = vNormal.xyz;
+    #endif
 
     nDotVP = max( 0.0,  -dot(mapNormal, normalize(lightDir)));
     nDotHV = max( 0.0,   dot(mapNormal, halfVector));

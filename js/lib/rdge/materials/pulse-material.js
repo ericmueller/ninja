@@ -60,8 +60,10 @@ var PulseMaterial = function PulseMaterial()
     ///////////////////////////////////////////////////////////////////////
     // Property Accessors
     ///////////////////////////////////////////////////////////////////////
-    this.isAnimated         = function()            {  return true;     };
-    this.getShaderDef       = function()            {  return pulseMaterialDef; }
+    this.isAnimated         = function()            {  return true;             };
+    this.getShaderDef       = function()            {  return pulseMaterialDef; };
+
+    //this.ignoreLights       = function()            {  return false;            };
 
     ///////////////////////////////////////////////////////////////////////
     // Material Property Accessors
@@ -99,9 +101,10 @@ var PulseMaterial = function PulseMaterial()
         this._dTime = 0.01;
 
         // set up the shader
-        this._shader = new RDGE.jshader();
-        this._shader.def = pulseMaterialDef;
-        this._shader.init();
+//        this._shader = new RDGE.jshader();
+//        this._shader.def = pulseMaterialDef;
+//        this._shader.init();
+        this._shader = this.buildShader( pulseMaterialDef );
 
         // set up the material node
         this._materialNode = RDGE.createMaterialNode("pulseMaterial" + "_" + world.generateUniqueNodeID());

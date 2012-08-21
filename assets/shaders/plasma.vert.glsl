@@ -34,9 +34,16 @@ uniform mat4 u_projMatrix;
 uniform mat4 u_worldMatrix;
 
 varying	vec2 v_uv;
+varying vec3    vNormal;
+varying vec3    vECPos;
+
 
 void main(void)
 {
-	gl_Position = u_projMatrix * u_mvMatrix * vec4(vert,1.0) ;
-	v_uv = texcoord;
+    //  position normals and vert
+    vECPos  = (u_mvMatrix*vec4(vert, 1.0)).xyz;
+    vNormal = (u_normalMatrix*vec4(normal, 0.0)).xyz;
+    gl_Position = u_projMatrix * vec4(vECPos, 1.0);
+	
+    v_uv = texcoord;
 }	

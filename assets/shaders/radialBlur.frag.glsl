@@ -39,6 +39,11 @@ uniform float u_time;
 uniform float u_speed;
 uniform sampler2D u_tex0;
 
+varying vec3 vNormal;
+varying vec3 vECPos;
+
+// ADD LIGHT FUNCTIONS HERE
+
 
 void main(void)
 {
@@ -70,6 +75,10 @@ void main(void)
     }
     sum /= iterCount;
     float r = 1.5/(1.0+dot(p,p));
+    vec4 color = vec4( sum*r, 1.0);
 
-    gl_FragColor = vec4( sum*r, 1.0);
+    vec4 ambient = vec4(0,0,0,0),  diffuse = vec4(0,0,0,0),  specular = vec4(0,0,0,0);
+    // ADD LIGHT CALLS HERE
+
+    gl_FragColor = color + ((color*(ambient + diffuse)) + specular);
 }

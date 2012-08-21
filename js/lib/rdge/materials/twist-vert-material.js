@@ -67,6 +67,8 @@ var TwistVertMaterial = function TwistVertMaterial()
     this._hasVertexDeformation = true;
     this._vertexDeformationTolerance = 0.1; // should be a property
 
+    //this.ignoreLights = function()  {  return false;  };
+
     ///////////////////////////////////////////////////////////////////////
     // Material Property Accessors
     ///////////////////////////////////////////////////////////////////////
@@ -93,9 +95,7 @@ var TwistVertMaterial = function TwistVertMaterial()
         this.setWorld(world);
 
         // set up the shader
-        this._shader = new RDGE.jshader();
-        this._shader.def = twistVertShaderDef;
-        this._shader.init();
+        this._shader = this.buildShader( twistVertShaderDef );
 
         // set up the material node
         this._materialNode = RDGE.createMaterialNode("twistVertMaterial" + "_" + world.generateUniqueNodeID());

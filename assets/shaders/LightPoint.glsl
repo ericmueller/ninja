@@ -34,8 +34,12 @@ void CalculatePointLight( in vec3 lightPos,  in vec3 normal, in vec4 lightAmb,  
     vec4 ambient, diffuse, specular;
 
     // normal mapping
-    vec3 mapNormal = texture2D(u_normalMap, vec2(vNormal.w, vECPos.w)).xyz * 2.0 - 1.0;
-    mapNormal = normalize(mapNormal.x*vec3(normal.z, 0.0, -normal.x) + vec3(0.0, mapNormal.y, 0.0) + mapNormal.z*normal);
+    #if defined (USE_NORMAL_MAP)
+        vec3 mapNormal = texture2D(u_normalMap, vec2(vNormal.w, vECPos.w)).xyz * 2.0 - 1.0;
+        mapNormal = normalize(mapNormal.x*vec3(normal.z, 0.0, -normal.x) + vec3(0.0, mapNormal.y, 0.0) + mapNormal.z*normal);
+    #else
+        vec3 mapNormal = vNormal.xyz;
+    #endif
 
     // create envmap coordinates
     //vec3 r = reflect( normalize(vec3(vECPos.xyz - vEyePos.xyz)), mapNormal);

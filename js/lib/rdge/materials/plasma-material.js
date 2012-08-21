@@ -67,6 +67,8 @@ var PlasmaMaterial = function PlasmaMaterial() {
     this.isAnimated     = function()    {  return true;                 };
     this.getShaderDef   = function()    {  return plasmaShaderDef;      };
 
+    //this.ignoreLights   = function()    {  return false;                };
+
     ///////////////////////////////////////////////////////////////////////
     // Material Property Accessors
     ///////////////////////////////////////////////////////////////////////
@@ -81,9 +83,10 @@ var PlasmaMaterial = function PlasmaMaterial() {
         this.setWorld( world );
 
         // set up the shader
-        this._shader = new RDGE.jshader();
-        this._shader.def = plasmaShaderDef;
-        this._shader.init();
+//        this._shader = new RDGE.jshader();
+//        this._shader.def = plasmaShaderDef;
+//        this._shader.init();
+        this._shader = this.buildShader( plasmaShaderDef );
 
         // set the default value
         this._time = 0;

@@ -34,9 +34,16 @@ POSSIBILITY OF SUCH DAMAGE.
 precision highp float;
 #endif
 
-//uniform vec4 color;
 varying vec4 v_color;
+varying vec3 vNormal;
+varying vec3 vECPos;
+
+// ADD LIGHT FUNCTIONS HERE
+
 
 void main() {
-    gl_FragColor = v_color;
+    vec4 ambient = vec4(0,0,0,0),  diffuse = vec4(0,0,0,0),  specular = vec4(0,0,0,0);
+    // ADD LIGHT CALLS HERE
+
+    gl_FragColor = v_color + ((v_color*(ambient + diffuse)) + specular);
 }

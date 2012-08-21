@@ -37,6 +37,7 @@ precision highp float;
 
 // attributes
 attribute vec3 a_pos;
+attribute vec3 normal;
 attribute vec2 texcoord;
 
 // scalar uniforms
@@ -49,9 +50,13 @@ uniform float u_waveHeight;
 uniform mat4 u_mvMatrix;
 uniform mat4 u_projMatrix;
 uniform mat4 u_worldMatrix;
+uniform mat4 u_normalMatrix;
 
 // varying variables
 varying vec2 v_uv;
+
+varying vec3 vNormal;
+varying vec3 vECPos;
 
 
 void main()
@@ -73,5 +78,12 @@ void main()
     v.z -=  2.0*u_waveHeight;
     v.z *= x * 0.09;
 
-    gl_Position = u_projMatrix * u_mvMatrix * vec4(v,1.0) ;
+    //gl_Position = u_projMatrix * u_mvMatrix * vec4(v,1.0) ;
+
+    //  position normals and vert
+    vECPos  = (u_mvMatrix*vec4(v, 1.0)).xyz;
+    vNormal = (u_normalMatrix*vec4(normal, 0.0)).xyz;
+
+    //  pass along the geo
+    gl_Position = u_projMatrix * vec4(vECPos, 1.0);
 }

@@ -14,13 +14,19 @@ precision highp float;
 #endif
 
 
-varying vec2 	v_uv;
 uniform float 	u_time;
 
 uniform float u_wave;
 uniform float u_wave1;
 uniform float u_wave2;
 uniform float u_speed;
+
+varying vec2 	v_uv;
+varying vec3 vNormal;
+varying vec3 vECPos;
+
+// ADD LIGHT FUNCTIONS HERE
+
 
 void main(void)
 {
@@ -31,6 +37,10 @@ void main(void)
 	float wave =	(cos(time + y / (u_wave+0.2)  + cos(x / (u_wave+0.3) + cos((y / (u_wave+0.1))))));
 	float wave1 =	(sin(abs(wave + y/u_wave1)));
 	float wave2 =	(sin(abs(wave1 + y/u_wave2)));
+    vec4 color = vec4( abs(vec3(wave2,wave1,wave)),1.0);
 
-	gl_FragColor = vec4( abs(vec3(wave2,wave1,wave)),1.0);
+    vec4 ambient = vec4(0,0,0,0),  diffuse = vec4(0,0,0,0),  specular = vec4(0,0,0,0);
+    // ADD LIGHT CALLS HERE
+
+    gl_FragColor = color + ((color*(ambient + diffuse)) + specular);
 }	

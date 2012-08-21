@@ -73,8 +73,10 @@ var FlagMaterial = function FlagMaterial() {
 
     // a material can be animated or not. default is not.
     // Any material needing continuous rendering should override this method
-    this.isAnimated = function()            {  return true;  };
-    this.getShaderDef       = function()    {  return flagMaterialDef;  }
+    this.isAnimated = function()            {  return true;             };
+    this.getShaderDef   = function()        {  return flagMaterialDef;  };
+
+    //this.ignoreLights   = function()        {  return false;            };
 
     ///////////////////////////////////////////////////////////////////////
     // Methods
@@ -87,9 +89,10 @@ var FlagMaterial = function FlagMaterial() {
         if (world)  this.setWorld( world );
 
         // set up the shader
-        this._shader = new RDGE.jshader();
-        this._shader.def = flagMaterialDef;
-        this._shader.init();
+//        this._shader = new RDGE.jshader();
+//        this._shader.def = flagMaterialDef;
+//        this._shader.init();
+        this._shader = this.buildShader( flagMaterialDef );
 
         // set up the material node
         this._materialNode = RDGE.createMaterialNode("flagMaterial" + "_" + world.generateUniqueNodeID());

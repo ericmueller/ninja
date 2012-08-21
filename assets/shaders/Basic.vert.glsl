@@ -37,18 +37,26 @@ precision highp float;
 
 // attributes
 attribute vec3 a_pos;
+attribute vec3 normal;
 attribute vec2 texcoord;
 
 // varying
 varying vec2    v_texCoord0;
+varying vec3    vNormal;
+varying vec3    vECPos;
 
 // matrix uniforms
 uniform mat4 u_mvMatrix;
 uniform mat4 u_projMatrix;
 uniform mat4 u_worldMatrix;
+uniform mat4 u_normalMatrix;
 
 void main(void)
 {
     v_texCoord0 = texcoord;
-    gl_Position = u_projMatrix * u_mvMatrix * vec4(a_pos,1.0) ;
+
+    //  position normals and vert
+    vECPos  = (u_mvMatrix*vec4(a_pos, 1.0)).xyz;
+    vNormal = (u_normalMatrix*vec4(normal, 0.0)).xyz;
+    gl_Position = u_projMatrix * vec4(vECPos, 1.0);
 }
