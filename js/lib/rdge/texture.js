@@ -30,6 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
 var Material = require("js/lib/rdge/materials/material").Material;
+var viewUtils = require("js/helper-classes/3D/view-utils").ViewUtils;
 
 var __textureCounter = 0;
 
@@ -93,7 +94,6 @@ function Texture( dstWorld, texMapName,  wrap, mips )
     {
         // determine if the source is a canvas or an image file
         var viewUtils = require("js/helper-classes/3D/view-utils").ViewUtils;
-        //var root = viewUtils.application.ninja.currentDocument.documentRoot;
         var root;
         if (viewUtils.application.ninja.currentDocument)
             root = viewUtils.application.ninja.currentDocument.model.documentRoot;
@@ -176,7 +176,8 @@ function Texture( dstWorld, texMapName,  wrap, mips )
 
             // create a new canvas
             var NJUtils = require("js/lib/NJUtils").NJUtils;
-            this._srcCanvas = NJUtils.makeNJElement("canvas", "texture_internal_canvas", "shape", {"data-RDGE-id": NJUtils.generateRandom()}, true);
+            var app = viewUtils.getApplication();
+            this._srcCanvas = app.njUtils.make("canvas", {"data-RDGE-id": NJUtils.generateRandom()}, app.ninja.currentDocument);
             srcCanvas = this._srcCanvas;
             srcCanvas.width  = oldCanvas.width;
             srcCanvas.height = oldCanvas.height;
@@ -236,8 +237,8 @@ function Texture( dstWorld, texMapName,  wrap, mips )
 
         // create the canvas and context to render into
         var doc = srcCanvas.ownerDocument;
-        //this._renderCanvas = doc.createElement("texture_canvas");
-        this._renderCanvas = NJUtils.makeNJElement("canvas", "texture_canvas", "shape", {"data-RDGE-id": NJUtils.generateRandom()}, true);
+        var app = viewUtils.getApplication();
+        this._renderCanvas = app.njUtils.make("canvas", {"data-RDGE-id": NJUtils.generateRandom()}, app.ninja.currentDocument);
 
         this.render();
 

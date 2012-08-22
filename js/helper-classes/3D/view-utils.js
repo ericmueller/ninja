@@ -1425,6 +1425,13 @@ exports.ViewUtils = Montage.create(Component, {
         }
     },
 
+    getApplication: {
+        value: function()
+        {
+            return this.application;
+        }
+    },
+
     clearStageTranslation: {
         value: function() {
             if (this.application.ninja.currentDocument)
