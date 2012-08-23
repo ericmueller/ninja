@@ -405,6 +405,28 @@ exports.PiData = Montage.create( Montage, {
                 ]
             },
             {
+                label: "Lights",
+                Section:
+                [
+                    [
+                        {
+                            type : "dropdown",
+                            id : "light0Type",
+                            prop : "light0Type",
+                            defaultValue: "off",
+                            label : "Type",
+                            items : ["DISABLED","ambient","directional","point","spot"]
+                        },
+                        {
+                            type: "button",
+                            id: "editLight0",
+                            prop: "editLight0",
+                            label: "Edit"
+                        }
+                    ]
+                ]
+            },
+            {
                 label: "Materials",
 
                 Section: [

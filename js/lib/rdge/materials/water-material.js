@@ -183,6 +183,8 @@ var BlueSkyMaterial = function BlueSkyMaterial()
     //this._diffuseColor = [0.5, 0.5, 0.5, 0.5];
     //this._propValues[this._propNames[1]] = this._diffuseColor.slice();
 
+    this.ignoreLights       = function()  {  return false;  }
+
     this.init = function (world)
     {
         // save the world

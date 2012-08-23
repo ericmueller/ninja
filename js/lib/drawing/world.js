@@ -150,7 +150,7 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
     this.getCameraMat           = function()        {  return this._cameraMat.slice(0); };
     this.setCameraMat           = function(c)       {  this._cameraMat = c.slice(0);  this._cameraMatInv = glmat4.inverse(c, []);  };
 
-    this.getCameraMatInverse  = function()      {  return this._cameraMatInv.slice(0); };
+    this.getCameraMatInverse  = function()          {  return this._cameraMatInv.slice(0); };
 
     this.getViewDistance        = function()        {  return this._viewDist;           };
 
@@ -162,6 +162,7 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
     this.getRenderer            = function()        {  return this.renderer;            };
 
     this.getLights              = function()        {  return this._lightArray;         };
+    this.getLight               = function( index ) {  return this._lightArray[index];  };
 
     // Flag to play/pause animation at authortime
     this._previewAnimation = true;
@@ -225,8 +226,8 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
             light2.setDirection( ld );
         }
         light2.setAmbient( [1.0, 0.0, 0.0,  1.0] );
-        light2.setDiffuse( [0.0, 1.0, 0.0,  1.0] );
-        light2.setSpecular( [0.5, 0.5, 0.5,  1.0] );
+        if (light2.setDiffuse)   light2.setDiffuse( [0.0, 1.0, 0.0,  1.0] );
+        if (light2.setSpecular)  light2.setSpecular( [0.5, 0.5, 0.5,  1.0] );
         this.addLight( light2 );
 
         var light = new Light();
@@ -238,7 +239,7 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
             light.setDirection( ld );
         }
         light.setAmbient( [0.5, 0.0, 0.0,  1.0] );
-        light.setDiffuse( [0.1, 0.1, 0.1,  1.0] );
+        if (light.setDiffuse)   light.setDiffuse( [0.1, 0.1, 0.1,  1.0] );
         this.addLight( light );
 
         // create a light transform

@@ -49,6 +49,12 @@ var DirectionalLight = function DirectionalLight()
     ///////////////////////////////////////////////////////////////////////
     this.getDirection    = function()    {  return this._direction.slice();     }
     this.setDirection    = function(d)   {  this._direction = d.slice();     this._rdgeLightNode.dir =  d.slice();      }
+    
+    this.getDiffuse     = function()    {  return this._diffuse.slice();    };
+    this.setDiffuse     = function(d)   {  this._diffuse  = d.slice();      this._rdgeLightNode.setDiffuseColor( this._diffuse );      };
+    
+    this.getSpecular    = function()    {  return this._specular.slice();   };
+    this.setSpecular    = function(s)   {  this._specular = s.slice();      this._rdgeLightNode.setSpecularColor( this._specular );    };
 
 
 

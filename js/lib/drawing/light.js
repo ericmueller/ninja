@@ -61,19 +61,29 @@ var Light = function Light()
     this._rdgeLightNode.setDiffuseColor( this._diffuse );
     this._rdgeLightNode.setSpecularColor( this._specular );
 
+
+
+    ///////////////////////////////////////////////////////////////////////
+    // Editable properties
+    ///////////////////////////////////////////////////////////////////////
+    this._propNames = ["ambient"];
+    this._propLabels = ["Ambient Color"];
+    this._propTypes = ["color"];
+    this._propValues = [];
+
+    this._propValues[this._propNames[0]] = [0.2, 0.2, 0.2,  1.0];
+
+
     ///////////////////////////////////////////////////////////////////////
     // Property Accessors
     ///////////////////////////////////////////////////////////////////////
     this.getType        = function()    {  return this._type;               };
-    this.getAmbient     = function()    {  return this._ambient.slice();    };
-    this.getDiffuse     = function()    {  return this._diffuse.slice();    };
-    this.getSpecular    = function()    {  return this._specular.slice();   };
-    this.getIndex       = function()    {  return this._index;              };
-
     this.setType        = function(t)   {  this._type = t;                  };
-    this.setAmbient     = function(a)   {  this._ambient  = a.slice();      this._rdgeLightNode.setAmbientColor( this._ambient );      };
-    this.setDiffuse     = function(d)   {  this._diffuse  = d.slice();      this._rdgeLightNode.setDiffuseColor( this._diffuse );      };
-    this.setSpecular    = function(s)   {  this._specular = s.slice();      this._rdgeLightNode.setSpecularColor( this._specular );    };
+    
+    this.getAmbient     = function()    {  return this._ambient.slice();    };
+     this.setAmbient     = function(a)   {  this._ambient  = a.slice();      this._rdgeLightNode.setAmbientColor( this._ambient );      };
+   
+    this.getIndex       = function()    {  return this._index;              };
     this.setIndex       = function(i)   {  this._index = i;                 };
 
     this.getRDGELightNode   = function()    {  return this._rdgeLightNode;  };
@@ -81,14 +91,30 @@ var Light = function Light()
     ///////////////////////////////////////////////////////////////////////
     // Common Methods
     ///////////////////////////////////////////////////////////////////////
+    this.getAllProperties = function( propNames,  propValues,  propTypes,  propLabels) {
+        // clear all the input arrays if there is junk in them
+        propNames.length    = 0;
+        propValues.length   = 0;
+        propTypes.length    = 0;
+        propLabels.length   = 0;
+
+        var nProps = this._propNames.length;
+        for (var i=0;  i<nProps;  i++) {
+            propNames[i]    = this._propNames[i];
+            propValues[i]   = this._propValues[this._propNames[i]];
+            propTypes[i]    = this._propTypes[i];
+            propLabels[i]   = this._propLabels[i];
+        }
+    };
+
     this.exportJSON = function()
     {
         var jObj =
         {
             'type'      : this.getType(),
-            'ambient'   : this.getName(),
-            'diffuse'   : this.getDiffuse(),
-            'specular'  : this.getSpecular()
+            'ambient'   : this.getAmbient(),
+//            'diffuse'   : this.getDiffuse(),
+//            'specular'  : this.getSpecular()
         };
 
         return jObj;

@@ -33,9 +33,16 @@ var Montage =           require("montage/core/core").Montage,
     CanvasController = require("js/controllers/elements/canvas-controller").CanvasController,
     njModule = require("js/lib/NJUtils"),
     World = require("js/lib/drawing/world").World,
-    MaterialsModel = require("js/models/materials-model").MaterialsModel;
+    MaterialsModel = require("js/models/materials-model").MaterialsModel,
+    Popup = require("montage/ui/popup/popup.reel").Popup,
+    LightPopup = require("js/panels/light-popup.reel").LightPopup;
 
 exports.ShapesController = Montage.create(CanvasController, {
+    
+    _lightInfo: {
+        enumerable:true,
+        writable: true
+    },
 
     setProperty: {
         value: function(el, p, value, eventType, source) {
@@ -247,6 +254,26 @@ exports.ShapesController = Montage.create(CanvasController, {
                     el.elementModel.shapeModel.GLGeomObj.setStrokeAngle(Math.PI * val/180);
                     el.elementModel.shapeModel.GLWorld.render();
                     break;
+
+                case "light0Type":
+                    console.log( "light 0 type: " + value );
+                    break;
+                case "editLight0":
+                    if (!this._lightPopup)
+                    {
+                        this._lightInfo = LightPopup.create();
+                        this._lightPopup = Popup.create();
+                        //this._lightInfo.materialsLibraryRef = this;
+                        this._lightPopup.content = this._lightInfo;
+                        //this._lightPopup.delegate = this;
+                        this._lightPopup.modal = false;
+                        this.eventManager.addEventListener("hideLightPopup", this, false);
+                        this._lightPopup.addEventListener("show", this, false);
+                    }
+                    this._lightPopup.show();
+                    this._lightInfo.loadLights( 0 );
+                    break;
+
                 default:
                     CanvasController.setProperty(el, p, value);
             }
@@ -905,6 +932,16 @@ exports.ShapesController = Montage.create(CanvasController, {
 
             return null;
         }
-    }
+    },
+
+    handleHideLightPopup: {
+        enumerable: false,
+        value: function (event) {
+            if(this._lightPopup){
+                this._lightInfo.destroy();
+                this._lightPopup.hide();
+            }
+        }
+    },
 
 });

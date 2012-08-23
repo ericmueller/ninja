@@ -1,0 +1,130 @@
+﻿<!DOCTYPE html>
+<!-- <copyright>
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> -->
+<html lang="en">
+    <head>
+
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+        <link rel="stylesheet" type="text/css" href="light-popup.css">
+
+        <script type="text/montage-serialization">
+        {
+            "okButton": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "mp_ok_btn"},
+                    "label": "OK"
+                }
+            },
+            "cancelButton": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "mp_cancel_btn"},
+                    "label": "Cancel"
+                }
+            },
+            "eventDelegator": {
+                "prototype": "montage/core/event/action-event-listener",
+                "properties": {
+                    "handler": {"@": "owner"},
+                    "action": "updatePreview"
+                }
+            },
+           "propControl1": {
+                "prototype": "js/components/ui/property-control.reel",
+                "properties": {
+                    "element": {"#": "mp_property"}
+                },
+                "bindings": {
+                    "data": {
+                        "boundObject": {"@": "lightProperties"},
+                        "boundObjectPropertyPath": "objectAtCurrentIteration",
+                        "oneway": true
+                    }
+                },
+                "listeners": [
+                                {
+                                    "type": "propertyChange",
+                                    "listener": {"@": "eventDelegator"},
+                                    "capture": false
+                                },
+                                {
+                                    "type": "propertyChanging",
+                                    "listener": {"@": "eventDelegator"},
+                                    "capture": false
+                                }
+                            ]
+            },
+            "lightProperties": {
+                "prototype": "montage/ui/repetition.reel",
+                "properties": {
+                    "element": {"#": "mp_properties_list"}
+                },
+                "bindings": {
+                    "objects": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "lightData",
+                        "oneway": false
+                    }
+                }
+            },
+            "owner": {
+                "prototype": "js/panels/light-popup.reel",
+                "properties": {
+                    "lightProperties": {"@": "lightProperties"},
+                    "element": {"#": "light_popup"},
+                    "okButton": {"@": "okButton"},
+                    "cancelButton": {"@": "cancelButton"},
+                    "lightTitle": {"#": "mp_title"}
+                }
+            }
+        }
+    </script>
+
+    </head>
+
+    <body>
+        <div data-montage-id="light_popup" class="light_popup">
+            <div data-montage-id="mp_title" class="mp_title">Light Name</div>
+            <hr />
+            <hr />
+            <div data-montage-id="mp_properties_list" class="mp_properties_list">
+                <div data-montage-id="mp_property" class="mp_property"></div>
+            </div>
+            <hr />
+            <div data-montage-id="mp_buttons" class="mp_buttons">
+                <button data-montage-id="mp_cancel_btn" class="mp_cancel_btn nj-skinned"></button>
+                <button data-montage-id="mp_ok_btn" class="mp_ok_btn nj-skinned"></button>
+            </div>
+        </div>
+    </body>
+</html>
