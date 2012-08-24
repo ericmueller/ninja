@@ -41,20 +41,25 @@ var DirectionalLight = function DirectionalLight()
     ///////////////////////////////////////////////////////////////////////
     this._type = this.LIGHT_TYPE_DIRECTIONAL;
 
-    this._direction = [0, 0, -1];
+    ///////////////////////////////////////////////////////////////////////
+    // Editable properties
+    ///////////////////////////////////////////////////////////////////////
+    this._propNames = ["ambient",               "diffuse",              "specular",             "direction"];
+    this._propLabels = ["Ambient Color",        "Diffuse Color",        "Specular Color",       "Light Direction"];
+    this._propTypes = ["color",                 "color",                "color",                "vector3d"];
+    this._propValues = [];
+
+    this._propValues[this._propNames[0]] = [0.2, 0.2, 0.2,  1.0];
+    this._propValues[this._propNames[1]] = [0.5, 0.5, 0.5,  1.0];
+    this._propValues[this._propNames[2]] = [1.0, 1.0, 1.0,  1.0];
+    this._propValues[this._propNames[3]] = [0.0, 0.0, -1.0,];
 
 
     ///////////////////////////////////////////////////////////////////////
     // Methods
     ///////////////////////////////////////////////////////////////////////
-    this.getDirection    = function()    {  return this._direction.slice();     }
-    this.setDirection    = function(d)   {  this._direction = d.slice();     this._rdgeLightNode.dir =  d.slice();      }
-    
-    this.getDiffuse     = function()    {  return this._diffuse.slice();    };
-    this.setDiffuse     = function(d)   {  this._diffuse  = d.slice();      this._rdgeLightNode.setDiffuseColor( this._diffuse );      };
-    
-    this.getSpecular    = function()    {  return this._specular.slice();   };
-    this.setSpecular    = function(s)   {  this._specular = s.slice();      this._rdgeLightNode.setSpecularColor( this._specular );    };
+    this.getDirection    = function()    {  return this._propValues["direction"].slice();       }
+    this.setDirection    = function(d)   {  this._propValues[this._propNames[3]] = d.slice();   }
 
 
 
@@ -63,9 +68,9 @@ var DirectionalLight = function DirectionalLight()
         var name = "u_light" + this._index;
         RDGE.rdgeGlobalParameters[name + "Type"].set( [this.getType()] );
 
-        RDGE.rdgeGlobalParameters[name + "Amb"].set( this.getAmbient() );
-        RDGE.rdgeGlobalParameters[name + "Diff"].set( this.getDiffuse() );
-        RDGE.rdgeGlobalParameters[name + "Spec"].set( this.getSpecular() );
+        RDGE.rdgeGlobalParameters[name + "Amb"].set( this._propValues["ambient"] );
+        RDGE.rdgeGlobalParameters[name + "Diff"].set( this._propValues["diffuse"] );
+        RDGE.rdgeGlobalParameters[name + "Spec"].set( this._propValues["specular"] );
 
         RDGE.rdgeGlobalParameters[name + "Dir"].set( this.getDirection() );
     }

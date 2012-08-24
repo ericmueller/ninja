@@ -51,18 +51,6 @@ var Light = function Light()
 
     this._index = 0;        // the index of the set of uniform variables
 
-    // all lights have an ambient, diffuse and specular component
-    this._ambient  = [0.2, 0.2, 0.2,  1.0];
-    this._diffuse  = [0.6, 0.6, 0.6,  1.0];
-    this._specular = [1.0, 1.0, 1.0,  1.0];
-
-    this._rdgeLightNode = RDGE.createLightNode("myLight");
-    this._rdgeLightNode.setAmbientColor( this._ambient );
-    this._rdgeLightNode.setDiffuseColor( this._diffuse );
-    this._rdgeLightNode.setSpecularColor( this._specular );
-
-
-
     ///////////////////////////////////////////////////////////////////////
     // Editable properties
     ///////////////////////////////////////////////////////////////////////
@@ -79,18 +67,28 @@ var Light = function Light()
     ///////////////////////////////////////////////////////////////////////
     this.getType        = function()    {  return this._type;               };
     this.setType        = function(t)   {  this._type = t;                  };
-    
-    this.getAmbient     = function()    {  return this._ambient.slice();    };
-     this.setAmbient     = function(a)   {  this._ambient  = a.slice();      this._rdgeLightNode.setAmbientColor( this._ambient );      };
    
     this.getIndex       = function()    {  return this._index;              };
     this.setIndex       = function(i)   {  this._index = i;                 };
 
-    this.getRDGELightNode   = function()    {  return this._rdgeLightNode;  };
-
     ///////////////////////////////////////////////////////////////////////
     // Common Methods
     ///////////////////////////////////////////////////////////////////////
+    this.getTypeName = function()
+    {
+        var rtnVal = "DISABLED";
+        var type = this.getType();
+        switch (type)
+        {
+            case this.LIGHT_TYPE_AMBIENT:       rtnVal = "ambient";        break;
+            case this.LIGHT_TYPE_DIRECTIONAL:   rtnVal = "directional";    break;
+            case this.LIGHT_TYPE_POINT:         rtnVal = "point";          break;
+            case this.LIGHT_TYPE_SPOT:          rtnVal = "spot";           break;
+        }
+
+        return rtnVal;
+    }
+
     this.getAllProperties = function( propNames,  propValues,  propTypes,  propLabels) {
         // clear all the input arrays if there is junk in them
         propNames.length    = 0;
@@ -107,12 +105,112 @@ var Light = function Light()
         }
     };
 
+
+    this.validateProperty = function( prop, value )
+    {
+        var rtnVal = false;
+        try
+        {
+            if (!this._propValues[prop])  return false;
+
+            // find the index of the property
+            var n = this._propNames.length;
+            var valType =  typeof value;
+            for (var i=0;  i<n;  i++)
+            {
+                if (this._propNames[i] == prop) {
+
+                    switch (this._propTypes[i])
+                    {
+                        case "color":
+                            rtnVal = ((valType == "object") && (value.length >= 4));
+                            break;
+
+                        case "vector2d":
+                            rtnVal = ((valType == "object") && (value.length >= 2));
+                            break;
+
+                        case "vector3d":
+                            rtnVal = ((valType == "object") && (value.length >= 3));
+                            break;
+
+                        case "angle":
+                        case "float":
+                            rtnVal = (valType == "number");
+                            break;
+
+                        case "file":
+                            rtnVal = ((valType == "string") || !value);
+                            break;
+                    }
+
+                    break;
+                }
+            }
+        }
+        catch(e)  {
+            console.log( "setting invalid light property: " + prop + ", value: " + value );
+        }
+
+        return rtnVal;
+    };
+
+    this.getPropertyCount = function() {
+        return this._propNames.length;
+    };
+
+    this.hasProperty = function( prop )
+    {
+        var propNames = [],  dummy = [];
+        this.getAllProperties( propNames, dummy, dummy, dummy )
+        for (var i=0;  i<propNames.length;  i++)
+        {
+            if (prop === propNames[i])  return true;
+        }
+
+        return false;
+    };
+
+
+    this.getPropertyType = function( prop )
+    {
+        var n = this.getPropertyCount();
+        for (var i=0;  i<n;  i++)
+        {
+            if (prop === this._propNames[i])  return this._propTypes[i];
+        }
+    };
+
+
+    this.setProperty = function( prop,  value )
+    {
+        if (!this.validateProperty( prop, value ))  return;
+
+        switch (this.getPropertyType(prop))
+        {
+            case "angle":
+            case "float":
+                this._propValues[prop] = value;
+                break;
+
+            case "file":
+                this._propValues[prop] = value.slice();
+                break;
+
+            case "color":
+            case "vector2d":
+            case "vector3d":
+                this._propValues[prop] = value.slice();
+                break;
+        }
+    };
+
     this.exportJSON = function()
     {
         var jObj =
         {
             'type'      : this.getType(),
-            'ambient'   : this.getAmbient(),
+            'ambient'   : this._propValues["ambient"].slice(),
 //            'diffuse'   : this.getDiffuse(),
 //            'specular'  : this.getSpecular()
         };
@@ -134,7 +232,7 @@ var Light = function Light()
         {
             var name = "u_light" + this._index;
             RDGE.rdgeGlobalParameters[name + "Type"].set( [this.getType()] );
-            RDGE.rdgeGlobalParameters[name +  "Amb"].set( this._ambient );
+            RDGE.rdgeGlobalParameters[name +  "Amb"].set( this._propValues["ambient"] );
         }
     }
 };

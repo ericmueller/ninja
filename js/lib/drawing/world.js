@@ -120,6 +120,7 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
 
     // array of lights
     this._lightArray = [];
+    this.MAX_LIGHTS = 4;
 
     ///////////////////////////////////////////////////////////////////////
     // Property accessors
@@ -217,7 +218,7 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
         this.myScene = new RDGE.SceneGraph();
 
         // create some lights
-        var light2 = new SpotLight();
+        var light2 = new DirectionalLight();
         if (light2.setPosition)   light2.setPosition( [0.0, 0.0, -4.0] );
         if (light2.setDirection)
         {
@@ -225,22 +226,22 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
             vecUtils.vecNormalize( 3, ld );
             light2.setDirection( ld );
         }
-        light2.setAmbient( [1.0, 0.0, 0.0,  1.0] );
-        if (light2.setDiffuse)   light2.setDiffuse( [0.0, 1.0, 0.0,  1.0] );
-        if (light2.setSpecular)  light2.setSpecular( [0.5, 0.5, 0.5,  1.0] );
+        light2.setProperty( "ambient",  [1.0, 0.0, 0.0,  1.0] );
+        if (light2.hasProperty("diffuse"))   light2.setProperty( "diffuse", [0.0, 0.1, 0.1,  1.0] );
+        if (light2.hasProperty("specular"))  light2.setProperty( "specular", [0.0, 0.1, 0.1,  1.0] );
         this.addLight( light2 );
 
-        var light = new Light();
-        if (light.setPosition)   light.setPosition( [0.0, 0.0, 0.0] );
-        if (light.setDirection)
-        {
-            var ld = [0, 0, -1];
-            vecUtils.vecNormalize( 3, ld );
-            light.setDirection( ld );
-        }
-        light.setAmbient( [0.5, 0.0, 0.0,  1.0] );
-        if (light.setDiffuse)   light.setDiffuse( [0.1, 0.1, 0.1,  1.0] );
-        this.addLight( light );
+//        var light = new Light();
+//        if (light.hasProperty("position"))   light.setProperty( "position", [0.0, 0.0, 0.0] );
+//        if (light.hasProperty("direction"))
+//        {
+//            var ld = [0, 0, -1];
+//            vecUtils.vecNormalize( 3, ld );
+//            light.setProperty( "direction", ld );
+//        }
+//        light.setProperty( "ambient",  [0.5, 0.0, 0.0,  1.0] );
+//        if (light.hasProperty("diffuse"))  light.setProperty( "diffuse", [0.1, 0.1, 0.1,  1.0] );
+//        this.addLight( light );
 
         // create a light transform
         var lightTr = RDGE.createTransformNode("lightTr");
@@ -727,6 +728,22 @@ World.prototype.updateMaterials = function( obj, time ) {
     this.updateMaterials( obj.getChild(), time );
 };
 
+World.prototype.rebuildShaders = function( obj ) {
+    if (!obj)  return;
+
+    var matArray = obj.getMaterialArray();
+    if (matArray) {
+        var n = matArray.length;
+        for (var i=0;  i<n;  i++) {
+            var mat = matArray[i];
+            mat.init( this );
+        }
+    }
+
+    this.rebuildShaders( obj.getNext()  );
+    this.rebuildShaders( obj.getChild() );
+};
+
 World.prototype.addLight = function( light )
 {
     if (!light)  return;
@@ -736,7 +753,7 @@ World.prototype.addLight = function( light )
     if ((type != light.LIGHT_TYPE_AMBIENT) && (type != light.LIGHT_TYPE_DIRECTIONAL) && (type != light.LIGHT_TYPE_POINT) && (type != light.LIGHT_TYPE_SPOT))  return;
 
     // check the light count limit
-    if (this._lightArray.length >= 4)
+    if (this._lightArray.length >= this.MAX_LIGHTS)
     {
         console.log( "maximum light count (4) exceeded.  Light not added" );
         return;
@@ -744,6 +761,26 @@ World.prototype.addLight = function( light )
 
     light.setIndex( this._lightArray.length );
     this._lightArray.push( light );
+}
+
+World.prototype.setLight = function( light, index )
+{
+    if ((index < 0) || (index >= this.MAX_LIGHTS))
+    {
+        console.log( "invalid light index: " + index );
+        return;
+    }
+    else
+    {
+        this._lightArray[index] = light;
+
+        // rebuild all shaders
+        //this.rebuildShaders( this.getGeomRoot() );
+        if (this._useWebGL) {
+            this.rebuildTree(this._geomRoot);
+            this.restartRenderLoop();
+        }
+    }
 }
 
 World.prototype.hasAnimatedLights = function()

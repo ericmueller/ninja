@@ -176,7 +176,7 @@ exports.LightPopup = Montage.create(Component, {
                 if (ch == ':')
                     propLabel = propLabel.substr(0, propLabel.length - 1);
 
-                var index;
+                var index = -1;
                 var nProps = this._propLabels.length;
                 for (var i=0;  i<nProps;  i++)
                 {
@@ -186,30 +186,28 @@ exports.LightPopup = Montage.create(Component, {
                         break;
                     }
                 }
-                if ((index != null) && this._light)
-                {
-                    var value = this.decodeValue( this._propTypes[index],  propValue );
-                    this._light.setProperty( this._propNames[index],  value );
-                }
 
-                var obj, matArray, matTypeArray, nMats, iMat, world;
-                if (this._useSelection)
+                if (index >= 0)
                 {
-//					console.log( "apply to selection" );
-
                     var selection = this.application.ninja.selectedElements;
                     if (selection && (selection.length > 0))
                     {
+                        var value = this.decodeValue( this._propTypes[index],  propValue );
                         var nObjs = selection.length;
                         for (var iObj=0;  iObj<nObjs;  iObj++)
                         {
                             var canvas = selection[iObj];
+                            var obj;
                             if (canvas.elementModel && canvas.elementModel.shapeModel)  obj = canvas.elementModel.shapeModel.GLGeomObj;
                             if (obj)
                             {
-								world = obj.getWorld();
+							    world = obj.getWorld();
                                 if (world)
-                                    world.restartRenderLoop();
+                                {
+                                    var light = world.getLight( this._lightIndex );
+                                    if (light)
+                                        light.setProperty( this._propNames[index],  value );
+                                }
                             }
                         }
                     }

@@ -46,13 +46,6 @@ varying vec3 vEyePos;
 //varying float vDiffuseIntensity;
 
 
-//material uniforms
-uniform vec4   u_matAmbient;
-uniform vec4   u_matDiffuse;
-uniform vec4   u_matSpecular;
-uniform vec4   u_matEmission;
-uniform float  u_renderGlow;
-
 // environment map
 uniform sampler2D envMap;
 

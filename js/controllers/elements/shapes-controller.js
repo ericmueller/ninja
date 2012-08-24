@@ -36,6 +36,12 @@ var Montage =           require("montage/core/core").Montage,
     MaterialsModel = require("js/models/materials-model").MaterialsModel,
     Popup = require("montage/ui/popup/popup.reel").Popup,
     LightPopup = require("js/panels/light-popup.reel").LightPopup;
+var Light = require("js/lib/drawing/light").Light;
+
+var DirectionalLight = require("js/lib/drawing/directional-light").DirectionalLight;
+var PointLight = require("js/lib/drawing/point-light").PointLight;
+var SpotLight = require("js/lib/drawing/spot-light").SpotLight;
+
 
 exports.ShapesController = Montage.create(CanvasController, {
     
@@ -256,16 +262,15 @@ exports.ShapesController = Montage.create(CanvasController, {
                     break;
 
                 case "light0Type":
-                    console.log( "light 0 type: " + value );
+                    this.setLightType( el, 0, value );
                     break;
+
                 case "editLight0":
                     if (!this._lightPopup)
                     {
                         this._lightInfo = LightPopup.create();
                         this._lightPopup = Popup.create();
-                        //this._lightInfo.materialsLibraryRef = this;
                         this._lightPopup.content = this._lightInfo;
-                        //this._lightPopup.delegate = this;
                         this._lightPopup.modal = false;
                         this.eventManager.addEventListener("hideLightPopup", this, false);
                         this._lightPopup.addEventListener("show", this, false);
@@ -354,11 +359,70 @@ exports.ShapesController = Montage.create(CanvasController, {
                     {
                         return "Flat";
                     }
+
+                case "light0Type":      return this.getLightTypeName(el, 0);        break;
+                case "light1Type":      return this.getLightTypeName(el, 1);        break;
+                case "light2Type":      return this.getLightTypeName(el, 2);        break;
+                case "light3Type":      return this.getLightTypeName(el, 3);        break;
+
                 default:
                     return CanvasController.getProperty(el, p);
             }
         }
     },
+
+    getLightTypeName: {
+        value: function( el, index ) {
+            var rtnVal = "DISABLED";
+            var world = el.elementModel.shapeModel.GLWorld;
+            if (world)
+            {
+                var light = world.getLight( index );
+                if (light)  rtnVal = light.getTypeName();
+            }
+
+            return rtnVal;
+        }
+    },
+
+    setLightType: {
+        value: function( el, index, value ) {
+            var world = el.elementModel.shapeModel.GLWorld;
+            if (world) {
+                var light = world.getLight( index );
+                if (light && (light.getTypeName() === value))  return;
+                var newLight;
+                switch (value)
+                {
+                    case "ambient":         newLight = new Light();                 break;
+                    case "directional":     newLight = new DirectionalLight();      break;
+                    case "point":           newLight = new PointLight();            break;
+                    case "spot":            newLight = new SpotLight();             break;
+                }
+                if (!newLight)
+                    console.log( "invalid light type: " + value );
+                else
+                {
+                    this.copyCommonLightParameters( light, newLight );
+                    world.setLight( newLight, index );
+                }
+            }
+        }
+    },
+
+    copyCommonLightParameters: {
+        value: function( srcLight,  dstLight )
+        {
+            var propNames = [],  propValues = [];
+            srcLight.getAllProperties( propNames,  propValues,  [],  []);
+            var n = propNames.length;
+            for (var i=0;  i<n;  i++)
+            {
+                if (dstLight.hasProperty(propNames[i]))  dstLight.setProperty( propNames[i],  propValues[i] );
+            }
+        }
+    },
+            
 
     getShapeProperty: {
         value: function(el, prop) {

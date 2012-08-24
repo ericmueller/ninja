@@ -411,16 +411,19 @@ var Material = function GLMaterial( world ) {
         var lights = this.getWorld().getLights();
         var nLights = lights.length;
         var addDir = [false, false, false, false];
-        for (var i=0;  i<nLights;  i++)
+        for (var i=0;  i<this.getWorld().MAX_LIGHTS;  i++)
         {
             var light = lights[i];
-            var type = light.getType();
-            if (type != light.LIGHT_TYPE_UNDEFINED)  useAny = true;
-            if (type == light.LIGHT_TYPE_DIRECTIONAL)  useDir = true;
-            if (type == light.LIGHT_TYPE_SPOT)   useSpot = true;
-            if (type == light.LIGHT_TYPE_POINT)  usePoint = true;
+            if (light)
+            {
+                var type = light.getType();
+                if (type != light.LIGHT_TYPE_UNDEFINED)  useAny = true;
+                if (type == light.LIGHT_TYPE_DIRECTIONAL)  useDir = true;
+                if (type == light.LIGHT_TYPE_SPOT)   useSpot = true;
+                if (type == light.LIGHT_TYPE_POINT)  usePoint = true;
 
-            addDir[i] = (  (type == light.LIGHT_TYPE_DIRECTIONAL) || (type == light.LIGHT_TYPE_SPOT) );
+                addDir[i] = (  (type == light.LIGHT_TYPE_DIRECTIONAL) || (type == light.LIGHT_TYPE_SPOT) );
+            }
         }
         if (this.ignoreLights())  useAny = false;
 
