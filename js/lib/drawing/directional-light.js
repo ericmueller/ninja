@@ -41,6 +41,8 @@ var DirectionalLight = function DirectionalLight()
     ///////////////////////////////////////////////////////////////////////
     this._type = this.LIGHT_TYPE_DIRECTIONAL;
 
+    this.getTypeName    = function()    {  return "directional";  }
+
     ///////////////////////////////////////////////////////////////////////
     // Editable properties
     ///////////////////////////////////////////////////////////////////////
@@ -53,6 +55,10 @@ var DirectionalLight = function DirectionalLight()
     this._propValues[this._propNames[1]] = [0.5, 0.5, 0.5,  1.0];
     this._propValues[this._propNames[2]] = [1.0, 1.0, 1.0,  1.0];
     this._propValues[this._propNames[3]] = [0.0, 0.0, -1.0,];
+
+    this.getDiffuse     = function()    {  return this._propValues["diffuse"].slice();      }
+    this.getSpecular    = function()    {  return this._propValues["specular"].slice();     }
+    this.getDirection   = function()    {  return this._propValues["direction"].slice();    }
 
 
     ///////////////////////////////////////////////////////////////////////

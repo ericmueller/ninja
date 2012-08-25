@@ -61,12 +61,14 @@ var Light = function Light()
 
     this._propValues[this._propNames[0]] = [0.2, 0.2, 0.2,  1.0];
 
+    this.getAmbient = function()  {  return this._propValues["ambient"].slice();  }
+
 
     ///////////////////////////////////////////////////////////////////////
     // Property Accessors
     ///////////////////////////////////////////////////////////////////////
     this.getType        = function()    {  return this._type;               };
-    this.setType        = function(t)   {  this._type = t;                  };
+    this.getTypeName    = function()    {  return "ambient";                }
    
     this.getIndex       = function()    {  return this._index;              };
     this.setIndex       = function(i)   {  this._index = i;                 };
@@ -74,21 +76,6 @@ var Light = function Light()
     ///////////////////////////////////////////////////////////////////////
     // Common Methods
     ///////////////////////////////////////////////////////////////////////
-    this.getTypeName = function()
-    {
-        var rtnVal = "DISABLED";
-        var type = this.getType();
-        switch (type)
-        {
-            case this.LIGHT_TYPE_AMBIENT:       rtnVal = "ambient";        break;
-            case this.LIGHT_TYPE_DIRECTIONAL:   rtnVal = "directional";    break;
-            case this.LIGHT_TYPE_POINT:         rtnVal = "point";          break;
-            case this.LIGHT_TYPE_SPOT:          rtnVal = "spot";           break;
-        }
-
-        return rtnVal;
-    }
-
     this.getAllProperties = function( propNames,  propValues,  propTypes,  propLabels) {
         // clear all the input arrays if there is junk in them
         propNames.length    = 0;
@@ -209,22 +196,38 @@ var Light = function Light()
     {
         var jObj =
         {
-            'type'      : this.getType(),
-            'ambient'   : this._propValues["ambient"].slice(),
-//            'diffuse'   : this.getDiffuse(),
-//            'specular'  : this.getSpecular()
+            'type'      : this.getType()
         };
+
+        var n = this._propNames.length;
+        for (var i=0;  i<n;  i++)
+        {
+            var prop  = this._propNames[i],
+                value = this._propValues[prop];
+
+            jObj[prop] = value;
+        }
 
         return jObj;
     };
 
     this.importJSON = function (jObj)
     {
-        this.setType( jObj.type );
-        this.setAmbient( jObj.ambient );
-        this.setDiffuse( jObj.diffuse );
-        this.setSpecular( jObj.specular );
+        if (this.getType() != jObj.type) throw new Error("ill-formed light");
+
+        try
+        {
+            for (var prop in jObj)
+            {
+                var value = jObj[prop];
+                this.setProperty( prop, value );
+            }
+        }
+        catch (e) {
+            throw new Error("could not import material: " + jObj);
+        }
     };
+
 
     this.setUniforms = function()
     {

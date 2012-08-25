@@ -40,24 +40,39 @@ var PointLight = function PointLight()
     ///////////////////////////////////////////////////////////////////////
     this._type = this.LIGHT_TYPE_POINT;
 
-    this._position = [0, 0, 5];
+    this.getTypeName    = function()    {  return "point";  }
+
+    ///////////////////////////////////////////////////////////////////////
+    // Editable properties
+    ///////////////////////////////////////////////////////////////////////
+    this._propNames = ["ambient",               "diffuse",              "specular",             "position",         "direction"];
+    this._propLabels = ["Ambient Color",        "Diffuse Color",        "Specular Color",       "Position",         "Light Direction"];
+    this._propTypes = ["color",                 "color",                "color",                "vector3d",         "vector3d"];
+    this._propValues = [];
+
+    this._propValues[this._propNames[0]] = [0.2, 0.2, 0.2,  1.0];
+    this._propValues[this._propNames[1]] = [0.5, 0.5, 0.5,  1.0];
+    this._propValues[this._propNames[2]] = [1.0, 1.0, 1.0,  1.0];
+    this._propValues[this._propNames[3]] = [0.0, 0.0,  5.0,];
+    this._propValues[this._propNames[4]] = [0.0, 0.0, -1.0,];
+
+    this.getPosition  = function()  {  return this._propValues["position"].slice();   }
 
 
     ///////////////////////////////////////////////////////////////////////
     // Methods
     ///////////////////////////////////////////////////////////////////////
-    this.getPosition    = function()    {  return this._position.slice();   }
-    this.setPosition    = function(p)   {  this._position = p.slice();      this._rdgeLightNode.setPosition( p.slice() );      }
-
     this.setUniforms = function()
     {
         var name = "u_light" + this._index;
-        RDGE.rdgeGlobalParameters[name + "Type"].set( [this.getType()]    );
-        RDGE.rdgeGlobalParameters[name + "Amb" ].set( this.getAmbient()   );
-        RDGE.rdgeGlobalParameters[name + "Diff"].set( this.getDiffuse()   );
-        RDGE.rdgeGlobalParameters[name + "Spec"].set( this.getSpecular()  );
-        RDGE.rdgeGlobalParameters[name + "Pos" ].set( this.getPosition()  );
-        RDGE.rdgeGlobalParameters[name + "Dir" ].set( this.getDirection() );
+        RDGE.rdgeGlobalParameters[name + "Type"].set( [this.getType()] );
+
+        RDGE.rdgeGlobalParameters[name + "Amb"].set( this.getAmbient() );
+        RDGE.rdgeGlobalParameters[name + "Diff"].set( this.getDiffuse() );
+        RDGE.rdgeGlobalParameters[name + "Spec"].set( this.getSpecular() );
+
+        RDGE.rdgeGlobalParameters[name + "Pos"].set( this.getPosition() );
+        RDGE.rdgeGlobalParameters[name + "Dir"].set( this.getDirection() );
     }
 };
 

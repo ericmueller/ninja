@@ -39,17 +39,31 @@ var SpotLight = function SpotLight()
     // Properties
     ///////////////////////////////////////////////////////////////////////
     this._type = this.LIGHT_TYPE_SPOT;
+    this.getTypeName    = function()    {  return "spot";  }
 
     this._cosConeAngle = 0.999;
+
+    ///////////////////////////////////////////////////////////////////////
+    // Editable properties
+    ///////////////////////////////////////////////////////////////////////
+    this._propNames = ["ambient",               "diffuse",              "specular",             "position",         "direction",            "cosconeangle"];
+    this._propLabels = ["Ambient Color",        "Diffuse Color",        "Specular Color",       "Position",         "Light Direction",      "Cosine of Cone Angle"];
+    this._propTypes = ["color",                 "color",                "color",                "vector3d",         "vector3d",             "float"];
+    this._propValues = [];
+
+    this._propValues[this._propNames[0]] = [0.2, 0.2, 0.2,  1.0];
+    this._propValues[this._propNames[1]] = [0.5, 0.5, 0.5,  1.0];
+    this._propValues[this._propNames[2]] = [1.0, 1.0, 1.0,  1.0];
+    this._propValues[this._propNames[3]] = [0.0, 0.0,  5.0,];
+    this._propValues[this._propNames[4]] = [0.0, 0.0, -1.0,];
+    this._propValues[this._propNames[5]] = 0.999;
+
+    this.getCosConeAngle    = function()    {  return this._propValues["cosconeangle"].slice();   }
 
 
     ///////////////////////////////////////////////////////////////////////
     // Methods
     ///////////////////////////////////////////////////////////////////////
-    this.getCosConeAngle    = function()    {  return this._cosConeAngle;   }
-    this.setCosConeAngle    = function(c)   {  this._cosConeAngle = c;      }
-
-
     this.setUniforms = function()
     {
         var name = "u_light" + this._index;
