@@ -66,7 +66,7 @@ void CalculateSpotLight( in vec3 lightPos, in vec3 normal,  in vec3 lightDir,  i
     attenuation = clamp(1.0 - d * 0.01, 0.0, 1.0);
 
     // check if the point on the surface is within the cone of the light
-    float spotCosCutoff = 0.8,  spotAttenuation;
+    float spotCosCutoff = 0.999,  spotAttenuation;
     float spotExponent = 6.0;
     spotDot = dot( -vp, lightDir );
     if (spotDot < spotCosCutoff)

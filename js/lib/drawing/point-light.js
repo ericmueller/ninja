@@ -45,16 +45,15 @@ var PointLight = function PointLight()
     ///////////////////////////////////////////////////////////////////////
     // Editable properties
     ///////////////////////////////////////////////////////////////////////
-    this._propNames = ["ambient",               "diffuse",              "specular",             "position",         "direction"];
-    this._propLabels = ["Ambient Color",        "Diffuse Color",        "Specular Color",       "Position",         "Light Direction"];
-    this._propTypes = ["color",                 "color",                "color",                "vector3d",         "vector3d"];
+    this._propNames = ["ambient",               "diffuse",              "specular",             "position" ];
+    this._propLabels = ["Ambient Color",        "Diffuse Color",        "Specular Color",       "Position" ];
+    this._propTypes = ["color",                 "color",                "color",                "vector3d" ];
     this._propValues = [];
 
     this._propValues[this._propNames[0]] = [0.2, 0.2, 0.2,  1.0];
     this._propValues[this._propNames[1]] = [0.5, 0.5, 0.5,  1.0];
     this._propValues[this._propNames[2]] = [1.0, 1.0, 1.0,  1.0];
     this._propValues[this._propNames[3]] = [0.0, 0.0,  5.0,];
-    this._propValues[this._propNames[4]] = [0.0, 0.0, -1.0,];
 
     this.getPosition  = function()  {  return this._propValues["position"].slice();   }
 
@@ -72,7 +71,6 @@ var PointLight = function PointLight()
         RDGE.rdgeGlobalParameters[name + "Spec"].set( this.getSpecular() );
 
         RDGE.rdgeGlobalParameters[name + "Pos"].set( this.getPosition() );
-        RDGE.rdgeGlobalParameters[name + "Dir"].set( this.getDirection() );
     }
 };
 

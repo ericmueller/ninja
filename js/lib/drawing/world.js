@@ -218,18 +218,18 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
         this.myScene = new RDGE.SceneGraph();
 
         // create some lights
-        var light2 = new DirectionalLight();
-        if (light2.setPosition)   light2.setPosition( [0.0, 0.0, -4.0] );
-        if (light2.setDirection)
-        {
-            var ld = [0, 0, -1];
-            vecUtils.vecNormalize( 3, ld );
-            light2.setDirection( ld );
-        }
-        light2.setProperty( "ambient",  [1.0, 0.0, 0.0,  1.0] );
-        if (light2.hasProperty("diffuse"))   light2.setProperty( "diffuse", [0.0, 0.1, 0.1,  1.0] );
-        if (light2.hasProperty("specular"))  light2.setProperty( "specular", [0.0, 0.1, 0.1,  1.0] );
-        this.addLight( light2 );
+//        var light2 = new DirectionalLight();
+//        if (light2.setPosition)   light2.setPosition( [0.0, 0.0, -4.0] );
+//        if (light2.setDirection)
+//        {
+//            var ld = [0, 0, -1];
+//            vecUtils.vecNormalize( 3, ld );
+//            light2.setDirection( ld );
+//        }
+//        light2.setProperty( "ambient",  [1.0, 0.0, 0.0,  1.0] );
+//        if (light2.hasProperty("diffuse"))   light2.setProperty( "diffuse", [0.0, 0.1, 0.1,  1.0] );
+//        if (light2.hasProperty("specular"))  light2.setProperty( "specular", [0.0, 0.1, 0.1,  1.0] );
+//        this.addLight( light2 );
 
 //        var light = new Light();
 //        if (light.hasProperty("position"))   light.setProperty( "position", [0.0, 0.0, 0.0] );

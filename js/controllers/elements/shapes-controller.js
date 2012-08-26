@@ -403,7 +403,7 @@ exports.ShapesController = Montage.create(CanvasController, {
                     console.log( "invalid light type: " + value );
                 else
                 {
-                    this.copyCommonLightParameters( light, newLight );
+                    if (light)  this.copyCommonLightParameters( light, newLight );
                     world.setLight( newLight, index );
                 }
             }
@@ -413,6 +413,9 @@ exports.ShapesController = Montage.create(CanvasController, {
     copyCommonLightParameters: {
         value: function( srcLight,  dstLight )
         {
+            if (!srcLight)  return;
+            if (!dstLight)  return;
+
             var propNames = [],  propValues = [];
             srcLight.getAllProperties( propNames,  propValues,  [],  []);
             var n = propNames.length;

@@ -120,6 +120,27 @@ exports.LightPopup = Montage.create(Component, {
         {
             if (this._originalValues)
             {
+                var selection = this.application.ninja.selectedElements;
+                if (selection && (selection.length > 0))
+                {
+                    var nObjs = selection.length;
+                    for (var iObj=0;  iObj<nObjs;  iObj++)
+                    {
+                        var canvas = selection[iObj];
+                        var obj;
+                        if (canvas.elementModel && canvas.elementModel.shapeModel)  obj = canvas.elementModel.shapeModel.GLGeomObj;
+                        if (obj)
+                        {
+                            var world = obj.getWorld();
+                            if (world)
+                            {
+                                var light = world.getLight( this._lightIndex );
+                                if (light)
+                                    light.importJSON( this._originalValues );
+                            }
+                        }
+                    }
+                }
             }
         }
     },

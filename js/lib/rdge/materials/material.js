@@ -129,7 +129,7 @@ var Material = function GLMaterial( world ) {
     this.hasNormalMap   = function()  {  return false;  }
 
     // materials can ignore external lighting if they choose.
-    this.ignoreLights   = function()  {  return true;  }
+    this.ignoreLights   = function()  {  return false;  }
 
     ///////////////////////////////////////////////////////////////////////
     // Common Material Methods

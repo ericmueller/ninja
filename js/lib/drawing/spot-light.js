@@ -58,7 +58,7 @@ var SpotLight = function SpotLight()
     this._propValues[this._propNames[4]] = [0.0, 0.0, -1.0,];
     this._propValues[this._propNames[5]] = 0.999;
 
-    this.getCosConeAngle    = function()    {  return this._propValues["cosconeangle"].slice();   }
+    this.getCosConeAngle    = function()    {  return this._propValues["cosconeangle"];   }
 
 
     ///////////////////////////////////////////////////////////////////////
