@@ -82,6 +82,9 @@ void main(void)
     vec4 ambient = vec4(0,0,0,0),  diffuse = vec4(0,0,0,0),  specular = vec4(0,0,0,0);
     // ADD LIGHT CALLS HERE
 
-    gl_FragColor = color + ((color*(ambient + diffuse)) + specular);
-    //gl_FragColor = color;
+    #if defined (USE_LIGHTS)
+        gl_FragColor = color + u_lightAmount*((color*(ambient + diffuse)) + specular);
+    #else
+        gl_FragColor = color;
+    #endif
 }
