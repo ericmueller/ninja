@@ -96,6 +96,9 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
     // by the materials used by the objects
     this._materialShininess = 20.0;
 
+    // apply a scalar to the amount of light added by canvas lights
+    this._lightAmount = 0.3;
+
     this._geomRoot = undefined;
 
     this._cameraMat = Matrix.I(4);
@@ -278,21 +281,24 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
 
         if (this._useWebGL)
         {
-            if (this._lightArray && (this._lightArray.length > 0))
+            if (this._lightArray)
             {
-//            // changed the global position uniform of light 0, another way to change behavior of a light
-//            //RDGE.rdgeGlobalParameters.u_light0Pos.set([5 * Math.cos(this.elapsed), 5 * Math.sin(this.elapsed), 10]);
+                var anyActiveLights = false;
+                for (var i=0;  i<this.MAX_LIGHTS;  i++)
+                {
+                    // orbit the light nodes around the boxes
+                    var light = this._lightArray[0];
+                    if (light)
+                    {
+                        //if (light.setPosition)   light.setPosition([2 * Math.cos(this.elapsed), 2 * Math.sin(this.elapsed), -4]);
+                        //if (light.setDirection)  light.setDirection( vecUtils.vecNormalize(3, [Math.cos(this.elapsed), Math.sin(this.elapsed), -1]) );
+                        anyActiveLights = true;
+                        light.setUniforms();
+                    }
+                }
 
-//            // orbit the light nodes around the boxes
-//            //this.light.setPosition([1.2*Math.cos(this.elapsed*2.0), 1.2*Math.sin(this.elapsed*2.0), 1.2*Math.cos(this.elapsed*2.0)]);
-//            //this.light.setPosition([5 * Math.cos(this.elapsed), 5 * Math.sin(this.elapsed), 10]);
-//            //var light = this._lightArray[0].getRDGELightNode();
-              var light = this._lightArray[0];
-              if (light.setPosition)   light.setPosition([2 * Math.cos(this.elapsed), 2 * Math.sin(this.elapsed), -4]);
-              //if (light.setDirection)  light.setDirection( vecUtils.vecNormalize(3, [Math.cos(this.elapsed), Math.sin(this.elapsed), -1]) );
-              light.setUniforms();
-//            //this.applyLights();
-//            //this.light2.setPosition([-1.2*Math.cos(this.elapsed*2.0), 1.2*Math.sin(this.elapsed*2.0), -1.2*Math.cos(this.elapsed)]);
+                if (anyActiveLights)
+                    RDGE.rdgeGlobalParameters["u_lightAmount"].set( [this._lightAmount] );
             }
         }
 
@@ -773,11 +779,13 @@ World.prototype.setLight = function( light, index )
     else
     {
         this._lightArray[index] = light;
+        light.setIndex( index );
 
         // rebuild all shaders
         //this.rebuildShaders( this.getGeomRoot() );
         if (this._useWebGL) {
             this.rebuildTree(this._geomRoot);
+            this.applyLights();
             this.restartRenderLoop();
         }
     }
@@ -788,14 +796,14 @@ World.prototype.hasAnimatedLights = function()
     // NOTE:  this function is incomplete - currently, lights have animation 
     // if there is either a directional, point, or spot light in the scene
 
-    var nLights = this._lightArray.length;
-    for (var i=0;  i<nLights;  i++)
-    {
-        var light = this._lightArray[i];
-        var type = light.getType();
-        if ((type === light.LIGHT_TYPE_DIRECTIONAL) || (type === light.LIGHT_TYPE_POINT) || (type === light.LIGHT_TYPE_SPOT))
-            return true;
-    }
+//    var nLights = this._lightArray.length;
+//    for (var i=0;  i<nLights;  i++)
+//    {
+//        var light = this._lightArray[i];
+//        var type = light.getType();
+//        if ((type === light.LIGHT_TYPE_DIRECTIONAL) || (type === light.LIGHT_TYPE_POINT) || (type === light.LIGHT_TYPE_SPOT))
+//            return true;
+//    }
 
     return false;
 }
@@ -819,21 +827,24 @@ World.prototype.applyLights = function()
                     ];
 
     // add the user defined lights
-    for (var i=0;  i<this._lightArray.length;  i++)
+    for (var i=0;  i<this.MAX_LIGHTS;  i++)
     {
         // get the light
         var light = this._lightArray[i];
-        var lightType = light.getType();
+        if (light)
+        {
+            var lightType = light.getType();
        
-        // enable the light
-        //lightTrNode.materialNode.enableLightChannel( i, light.getRDGELightNode() );
+            // enable the light
+            //lightTrNode.materialNode.enableLightChannel( i, light.getRDGELightNode() );
 
-        // set the uniform type
-        //uniformArray[i].set( [lightType] );
+            // set the uniform type
+            uniformArray[i].set( [lightType] );
 
-        // set the uniforms
-        light.setUniforms();
-   }
+            // set the uniforms
+            light.setUniforms();
+        }
+    }
 }
 
 

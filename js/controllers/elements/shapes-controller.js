@@ -261,23 +261,15 @@ exports.ShapesController = Montage.create(CanvasController, {
                     el.elementModel.shapeModel.GLWorld.render();
                     break;
 
-                case "light0Type":
-                    this.setLightType( el, 0, value );
-                    break;
+                case "light0Type":      this.setLightType( el, 0, value );      break;
+                case "light1Type":      this.setLightType( el, 1, value );      break;
+                case "light2Type":      this.setLightType( el, 2, value );      break;
+                case "light3Type":      this.setLightType( el, 3, value );      break;
 
-                case "editLight0":
-                    if (!this._lightPopup)
-                    {
-                        this._lightInfo = LightPopup.create();
-                        this._lightPopup = Popup.create();
-                        this._lightPopup.content = this._lightInfo;
-                        this._lightPopup.modal = false;
-                        this.eventManager.addEventListener("hideLightPopup", this, false);
-                        this._lightPopup.addEventListener("show", this, false);
-                    }
-                    this._lightPopup.show();
-                    this._lightInfo.loadLights( 0 );
-                    break;
+                case "editLight0":      this.showLightPopup( 0 );               break;
+                case "editLight1":      this.showLightPopup( 1 );               break;
+                case "editLight2":      this.showLightPopup( 2 );               break;
+                case "editLight3":      this.showLightPopup( 3 );               break;
 
                 default:
                     CanvasController.setProperty(el, p, value);
@@ -382,6 +374,22 @@ exports.ShapesController = Montage.create(CanvasController, {
             }
 
             return rtnVal;
+        }
+    },
+
+    showLightPopup: {
+        value: function( index ) {
+            if (!this._lightPopup)
+            {
+                this._lightInfo = LightPopup.create();
+                this._lightPopup = Popup.create();
+                this._lightPopup.content = this._lightInfo;
+                this._lightPopup.modal = false;
+                this.eventManager.addEventListener("hideLightPopup", this, false);
+                this._lightPopup.addEventListener("show", this, false);
+            }
+            this._lightPopup.show();
+            this._lightInfo.loadLights( index );
         }
     },
 

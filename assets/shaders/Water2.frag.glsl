@@ -59,25 +59,29 @@ varying vec3 vECPos;
 
 void main(void)
 {
-vec2 p = (gl_FragCoord.xy) / u_resolution.xy, c1 = p, c2 = p;
-float cc1 = col(c1);
+    vec2 p = (gl_FragCoord.xy) / u_resolution.xy, c1 = p, c2 = p;
+    float cc1 = col(c1);
 
-c2.x += u_resolution.x/u_delta;
-float dx = u_emboss*(cc1-col(c2))/u_delta;
+    c2.x += u_resolution.x/u_delta;
+    float dx = u_emboss*(cc1-col(c2))/u_delta;
 
-c2.x = p.x;
-c2.y += u_resolution.y/u_delta;
-float dy = u_emboss*(cc1-col(c2))/u_delta;
+    c2.x = p.x;
+    c2.y += u_resolution.y/u_delta;
+    float dy = u_emboss*(cc1-col(c2))/u_delta;
 
-c1.x += dx;
-c1.y = -(c1.y+dy);
+    c1.x += dx;
+    c1.y = -(c1.y+dy);
 
-vec4 ambient = vec4(0,0,0,0),  diffuse = vec4(0,0,0,0),  specular = vec4(0,0,0,0);
-// ADD LIGHT CALLS HERE
+    vec4 ambient = vec4(0,0,0,0),  diffuse = vec4(0,0,0,0),  specular = vec4(0,0,0,0);
+    // ADD LIGHT CALLS HERE
 
+    float alpha = 1.+dot(dx,dy)*intence;
+    vec4 color = texture2D(u_tex0,c1)*(alpha);
 
-float alpha = 1.+dot(dx,dy)*intence;
-vec4 color = texture2D(u_tex0,c1)*(alpha);
-gl_FragColor = gl_FragColor = color + ((color*(ambient + diffuse)) + specular);
+    #if defined (USE_LIGHTS)
+        gl_FragColor = color + u_lightAmount*((color*(ambient + diffuse)) + specular);
+    #else
+        gl_FragColor = color;
+    #endif
 
 }

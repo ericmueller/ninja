@@ -494,14 +494,19 @@ var Material = function GLMaterial( world ) {
             }
 
             // add the light specific uniforms
-            for (var i=0;  i<nLights;  i++)
+            for (var i=0;  i<this.getWorld().MAX_LIGHTS;  i++)
             {
                 var light = lights[i];
-                var type = light.getType();
-                var baseName = "u_light" + i;
-                if ((type == light.LIGHT_TYPE_DIRECTIONAL) || (type == light.LIGHT_TYPE_SPOT))  lightVars += "uniform vec3 " + baseName + "Dir;\n";
-                if (type == light.LIGHT_TYPE_SPOT)  lightVars += "uniform float " + baseName + "SpotCosCutoff;\n";
+                if (light)
+                {
+                    var type = light.getType();
+                    var baseName = "u_light" + i;
+                    if ((type == light.LIGHT_TYPE_DIRECTIONAL) || (type == light.LIGHT_TYPE_SPOT))  lightVars += "uniform vec3 " + baseName + "Dir;\n";
+                    if (type == light.LIGHT_TYPE_SPOT)  lightVars += "uniform float " + baseName + "SpotCosCutoff;\n";
+                }
             }
+            lightVars += "uniform float u_lightAmount;\n";
+            lightVars += "#define USE_LIGHTS\n";
 
             // add a define if the material uses a normal map
             if (this.hasNormalMap())

@@ -423,6 +423,54 @@ exports.PiData = Montage.create( Montage, {
                             prop: "editLight0",
                             label: "Edit"
                         }
+                    ],
+                    [
+                        {
+                            type : "dropdown",
+                            id : "light1Type",
+                            prop : "light1Type",
+                            defaultValue: "off",
+                            label : "Type",
+                            items : ["DISABLED","ambient","directional","point","spot"]
+                        },
+                        {
+                            type: "button",
+                            id: "editLight1",
+                            prop: "editLight1",
+                            label: "Edit"
+                        }
+                    ],
+                    [
+                        {
+                            type : "dropdown",
+                            id : "light2Type",
+                            prop : "light2Type",
+                            defaultValue: "off",
+                            label : "Type",
+                            items : ["DISABLED","ambient","directional","point","spot"]
+                        },
+                        {
+                            type: "button",
+                            id: "editLight2",
+                            prop: "editLight2",
+                            label: "Edit"
+                        }
+                    ],
+                    [
+                        {
+                            type : "dropdown",
+                            id : "light3Type",
+                            prop : "light3Type",
+                            defaultValue: "off",
+                            label : "Type",
+                            items : ["DISABLED","ambient","directional","point","spot"]
+                        },
+                        {
+                            type: "button",
+                            id: "editLight3",
+                            prop: "editLight3",
+                            label: "Edit"
+                        }
                     ]
                 ]
             },
@@ -631,6 +679,76 @@ exports.PiData = Montage.create( Montage, {
                             unit : "%",
                             acceptableUnits: ["%"]
 
+                        }
+                    ]
+                ]
+            },
+            {
+                label: "Lights",
+                Section:
+                [
+                    [
+                        {
+                            type : "dropdown",
+                            id : "light0Type",
+                            prop : "light0Type",
+                            defaultValue: "off",
+                            label : "Type",
+                            items : ["DISABLED","ambient","directional","point","spot"]
+                        },
+                        {
+                            type: "button",
+                            id: "editLight0",
+                            prop: "editLight0",
+                            label: "Edit"
+                        }
+                    ],
+                    [
+                        {
+                            type : "dropdown",
+                            id : "light1Type",
+                            prop : "light1Type",
+                            defaultValue: "off",
+                            label : "Type",
+                            items : ["DISABLED","ambient","directional","point","spot"]
+                        },
+                        {
+                            type: "button",
+                            id: "editLight1",
+                            prop: "editLight1",
+                            label: "Edit"
+                        }
+                    ],
+                    [
+                        {
+                            type : "dropdown",
+                            id : "light2Type",
+                            prop : "light2Type",
+                            defaultValue: "off",
+                            label : "Type",
+                            items : ["DISABLED","ambient","directional","point","spot"]
+                        },
+                        {
+                            type: "button",
+                            id: "editLight2",
+                            prop: "editLight2",
+                            label: "Edit"
+                        }
+                    ],
+                    [
+                        {
+                            type : "dropdown",
+                            id : "light3Type",
+                            prop : "light3Type",
+                            defaultValue: "off",
+                            label : "Type",
+                            items : ["DISABLED","ambient","directional","point","spot"]
+                        },
+                        {
+                            type: "button",
+                            id: "editLight3",
+                            prop: "editLight3",
+                            label: "Edit"
                         }
                     ]
                 ]

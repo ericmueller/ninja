@@ -60,6 +60,7 @@ RDGE.rdgeGlobalParameters =
     "u_lightDiff": { 'type': 'vec4', 'data': [0.8, 0.8, 0.8, 1] },
     "u_lightAmb": { 'type': 'vec4', 'data': [1.0000, 1.0000, 1.0000, 1.0] },
     "rdge_lights": {
+        "u_lightAmount": { 'type': 'float', 'data': [0.3] },
         "u_light0Pos": { 'type': 'vec3', 'data': [0.0, 0.0, 0.0] },
         "u_light0Diff": { 'type': 'vec4', 'data': [0.8, 0.8, 0.8, 1] },
         "u_light0Amb": { 'type': 'vec4', 'data': [0.0008, 0.0008, 0.0008, 1.0] },

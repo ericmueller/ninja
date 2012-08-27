@@ -227,7 +227,12 @@ exports.LightPopup = Montage.create(Component, {
                                 {
                                     var light = world.getLight( this._lightIndex );
                                     if (light)
+                                    {
                                         light.setProperty( this._propNames[index],  value );
+                                        light.setUniforms();
+                                        if (!world.hasAnimatedMaterials())
+                                            world.restartRenderLoop();
+                                    }
                                 }
                             }
                         }
