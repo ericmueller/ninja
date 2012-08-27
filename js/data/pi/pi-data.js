@@ -406,8 +406,22 @@ exports.PiData = Montage.create( Montage, {
             },
             {
                 label: "Lights",
-                Section:
+                
+               Section:
                 [
+                    [
+                        {
+                            type : "hottext",
+                            id : "lightAmount",
+                            prop : "lightAmount",
+                            defaultValue: "10 %",
+                            label : "Amount",
+                            inputFunction: parseFloat,
+                            min :   0.0,
+                            max :   100.0,
+                            unit : "%"
+                       }
+                    ],
                     [
                         {
                             type : "dropdown",

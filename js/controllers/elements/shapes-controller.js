@@ -260,6 +260,8 @@ exports.ShapesController = Montage.create(CanvasController, {
                     el.elementModel.shapeModel.GLGeomObj.setStrokeAngle(Math.PI * val/180);
                     el.elementModel.shapeModel.GLWorld.render();
                     break;
+                
+                case "lightAmount":     this.setLightAmount( el, val );       break;
 
                 case "light0Type":      this.setLightType( el, 0, value );      break;
                 case "light1Type":      this.setLightType( el, 1, value );      break;
@@ -356,9 +358,37 @@ exports.ShapesController = Montage.create(CanvasController, {
                 case "light1Type":      return this.getLightTypeName(el, 1);        break;
                 case "light2Type":      return this.getLightTypeName(el, 2);        break;
                 case "light3Type":      return this.getLightTypeName(el, 3);        break;
+                case "lightAmount":     return this.getLightAmount( el );           break;
 
                 default:
                     return CanvasController.getProperty(el, p);
+            }
+        }
+    },
+
+    getLightAmount: {
+        value: function( el )
+        {
+            var rtnVal = 0.1;
+            var world = el.elementModel.shapeModel.GLWorld;
+            if (world)
+            {
+                rtnVal = 100*world._lightAmount;
+            }
+
+            return rtnVal;
+       }
+    },
+
+    setLightAmount: {
+        value: function( el, value )
+        {
+            var world = el.elementModel.shapeModel.GLWorld;
+            if (world)
+            {
+                world._lightAmount = value/100.0;
+                if (!world.hasAnimatedMaterials())
+                    world.restartRenderLoop();
             }
         }
     },
