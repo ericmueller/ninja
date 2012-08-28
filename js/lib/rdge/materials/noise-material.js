@@ -50,8 +50,6 @@ var NoiseMaterial = function NoiseMaterial()
     this._name = "Noise";
     this._shaderName = "noise";
 
-    this._texMap = 'assets/images/cubelight.png';
-
     this._time = 0.0;
     this._dTime = 0.01;
 
@@ -69,17 +67,15 @@ var NoiseMaterial = function NoiseMaterial()
     // Material Property Accessors
     ///////////////////////////////////////////////////////////////////////
 
-    var u_tex0_index    = 0,
-        u_xScale_index  = 1,
-        u_yScale_index  = 2,
-        u_speed_index   = 3;
+    var u_xScale_index  = 0,
+        u_yScale_index  = 1,
+        u_speed_index   = 2;
 
-    this._propNames         = ["u_tex0",        "u_xscale",     "u_yscale",     "u_speed" ];
-    this._propLabels        = ["Texture map",   "X Range",      "Y Range",      "Speed" ];
-    this._propTypes         = ["file",          "float",        "float",        "float"];
+    this._propNames         = ["u_xscale",     "u_yscale",     "u_speed" ];
+    this._propLabels        = ["X Range",      "Y Range",      "Speed" ];
+    this._propTypes         = ["float",        "float",        "float"];
     this._propValues        = [];
 
-    this._propValues[ this._propNames[  u_tex0_index] ] = this._texMap.slice(0);
     this._propValues[ this._propNames[u_xScale_index] ] = 0.5;
     this._propValues[ this._propNames[u_yScale_index] ] = 0.4;
     this._propValues[ this._propNames[ u_speed_index] ] = 1.0;
@@ -101,9 +97,7 @@ var NoiseMaterial = function NoiseMaterial()
         this._dTime = 0.01;
 
         // create a canvas to render the noise into
-        var viewUtils = require("js/helper-classes/3D/view-utils").ViewUtils;
-        var app = viewUtils.getApplication();
-        var noiseCanvas  = app.njUtils.make("canvas", {"data-RDGE-id": NJUtils.generateRandom()}, app.ninja.currentDocument);
+        var noiseCanvas = this.generateNoiseCanvas(256, 256);
 
         var texture = new Texture( this.getWorld(), noiseCanvas );
         this._glTextures.push( texture );
@@ -122,13 +116,11 @@ var NoiseMaterial = function NoiseMaterial()
 
         // set the shader values in the shader
         this.setShaderValues();
-        this.setResolution( [world.getViewportWidth(),world.getViewportHeight()] );
         this.update( 0 );
     };
 
 	this.resetToDefault = function()
 	{
-		this._propValues[ this._propNames[  u_tex0_index] ] = this._texMap.slice(0);
 		this._propValues[ this._propNames[u_xScale_index] ] = 0.5;
 		this._propValues[ this._propNames[u_yScale_index] ] = 0.4;
 		this._propValues[ this._propNames[ u_speed_index] ] = 1.0;
@@ -166,16 +158,22 @@ var NoiseMaterial = function NoiseMaterial()
         }
     };
 
-    this.setResolution = function( res ) {
-        var material = this._materialNode;
-        if (material) {
-            var technique = material.shaderProgram['default'];
-            var renderer = RDGE.globals.engine.getContext().renderer;
-            if (renderer && technique) {
-                technique.u_resolution.set( res );
-            }
-        }
-    };
+    this.generateNoiseCanvas = function( w, h )
+    {
+        // create a canvas to render the noise into
+        var viewUtils = require("js/helper-classes/3D/view-utils").ViewUtils;
+        var NJUtils = require("js/lib/NJUtils").NJUtils;
+        var app = viewUtils.getApplication();
+        var noiseCanvas  = app.njUtils.make("canvas", {"data-RDGE-id": NJUtils.generateRandom()}, app.ninja.currentDocument);
+
+        // create the image data
+        var ctx = noiseCanvas.getContext( "2d" );
+        if (!ctx)  throw new Error( "Could not get 2D context for noise canvas" );
+        var imageData = ctx.createImageData( w, h );
+        var data = imageData.data;
+
+        
+    }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -309,9 +307,8 @@ var noiseMaterialDef =
     }
 };
 
-//PulseMaterial.prototype = new Material();
 
 if (typeof exports === "object") {
-    exports.PulseMaterial = PulseMaterial;
+    exports.NoiseMaterial = NoiseMaterial;
 }
 

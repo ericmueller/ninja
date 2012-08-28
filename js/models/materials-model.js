@@ -62,6 +62,7 @@ var TaperMaterial = require("js/lib/rdge/materials/taper-material").TaperMateria
 //var JuliaMaterial = require("js/lib/rdge/materials/julia-material").JuliaMaterial;
 //var KeleidoscopeMaterial = require("js/lib/rdge/materials/keleidoscope-material").KeleidoscopeMaterial;
 //var MandelMaterial = require("js/lib/rdge/materials/mandel-material").MandelMaterial;
+var NoiseMaterial = require("js/lib/rdge/materials/noise-material").NoiseMaterial;
 
 
 exports.MaterialsModel = Montage.create(Component, {
@@ -85,6 +86,7 @@ exports.MaterialsModel = Montage.create(Component, {
             //this.addMaterial(new KeleidoscopeMaterial());
             this.addMaterial(new LinearGradientMaterial());
             //this.addMaterial(new MandelMaterial());
+            this.addMaterial(new NoiseMaterial());
             this.addMaterial(new PlasmaMaterial());
             this.addMaterial(new PulseMaterial());
             this.addMaterial(new RadialBlurMaterial());
@@ -269,6 +271,7 @@ exports.MaterialsModel = Montage.create(Component, {
                 //case "julia":               mat = new JuliaMaterial();              break;
                 //case "keleidoscope":        mat = new KeleidoscopeMaterial();       break;
                 //case "mandel":              mat = new MandelMaterial();             break;
+                case "noise":                 mat = new NoiseMaterial();             break;
 
 
                 default:
