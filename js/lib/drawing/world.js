@@ -287,7 +287,7 @@ var World = function GLWorld( canvas, use3D, preserveDrawingBuffer )
                 for (var i=0;  i<this.MAX_LIGHTS;  i++)
                 {
                     // orbit the light nodes around the boxes
-                    var light = this._lightArray[0];
+                    var light = this._lightArray[i];
                     if (light)
                     {
                         //if (light.setPosition)   light.setPosition([2 * Math.cos(this.elapsed), 2 * Math.sin(this.elapsed), -4]);
@@ -1080,6 +1080,12 @@ World.prototype.exportJSON = function ()
     if (this._useWebGL)
         worldObj.scenedata = this.myScene.exportJSON();
 
+    // light data
+    worldObj.lightAmount = this._lightAmount;
+    var lightArray = this.exportLights();
+    if (lightArray)
+        worldObj.lights = lightArray;
+
     // object data
     var strArray = [];
     this.exportObjectsJSON( this._geomRoot, worldObj );
@@ -1121,6 +1127,22 @@ World.prototype.rebuildTree = function (obj)
         this.rebuildTree( obj.getNext() );
 };
 
+World.prototype.exportLights = function()
+{
+    var lightArray;
+    for (var i=0;  i<this.MAX_LIGHTS;  i++)
+    {
+        var light = this._lightArray[i];
+        if (light)
+        {
+            var lightObj = light.exportJSON();
+            if (!lightArray)  lightArray = [];
+            lightArray.push( lightObj );
+        }
+    }
+
+    return lightArray;
+}
 
 World.prototype.exportObjectsJSON = function( obj,  parentObj )
 {
@@ -1159,6 +1181,37 @@ World.prototype.findTransformNodeByMaterial = function( materialNode,  trNode )
     return rtnNode;
 };
 
+World.prototype.importLights = function( jObj )
+{
+    if (jObj.lightAmount)  this._lightAmount = jObj.lightAmount;
+    var lightArray = jObj.lights;
+    if (lightArray)
+    {
+        var nLights = lightArray.length;
+        var l = new Light();
+        for (var i=0;  i<nLights;  i++)
+        {
+            var lightObj = lightArray[i];
+            var light = null;
+            switch (lightObj.type)
+            {
+                case l.LIGHT_TYPE_AMBIENT:      light = new Light();                    break;
+                case l.LIGHT_TYPE_DIRECTIONAL:  light = new DirectionalLight();         break;
+                case l.LIGHT_TYPE_POINT:        light = new PointLight();               break;
+                case l.LIGHT_TYPE_SPOT:         light = new SpotLight();                break;
+            }
+
+            if (light)
+            {
+                light.importJSON( lightObj );
+                light.setIndex( this._lightArray.length );
+                this._lightArray.push( light );
+            }
+        }
+    }
+
+};
+
 World.prototype.importJSON = function (jObj)
 {
     if (jObj.webGL)
@@ -1170,6 +1223,8 @@ World.prototype.importJSON = function (jObj)
         RDGE.RDGEStart(this._canvas);
         this._canvas.task.stop()
     }
+
+    this.importLights( jObj );
 
     // import the objects
     // there should be exactly one child of the parent object

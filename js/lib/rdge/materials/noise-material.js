@@ -61,6 +61,8 @@ var NoiseMaterial = function NoiseMaterial()
     this.isAnimated         = function()            {  return true;             };
     this.getShaderDef       = function()            {  return noiseMaterialDef; };
 
+    this._texMap = 'assets/images/cubelight.png';
+
     //this.ignoreLights       = function()            {  return false;            };
 
     ///////////////////////////////////////////////////////////////////////
@@ -71,11 +73,17 @@ var NoiseMaterial = function NoiseMaterial()
         u_yScale_index  = 1,
         u_speed_index   = 2;
 
-    this._propNames         = ["u_xscale",     "u_yscale",     "u_speed" ];
-    this._propLabels        = ["X Range",      "Y Range",      "Speed" ];
-    this._propTypes         = ["float",        "float",        "float"];
+    var u_tex0_index    = 0,
+        u_xScale_index  = 1,
+        u_yScale_index  = 2,
+        u_speed_index   = 3;
+
+    this._propNames         = ["u_tex0",        "u_xscale",     "u_yscale",     "u_speed" ];
+    this._propLabels        = ["Texture map",   "X Range",      "Y Range",      "Speed" ];
+    this._propTypes         = ["file",          "float",        "float",        "float"];
     this._propValues        = [];
 
+    this._propValues[ this._propNames[  u_tex0_index] ] = this._texMap.slice(0);
     this._propValues[ this._propNames[u_xScale_index] ] = 0.5;
     this._propValues[ this._propNames[u_yScale_index] ] = 0.4;
     this._propValues[ this._propNames[ u_speed_index] ] = 1.0;
@@ -100,7 +108,7 @@ var NoiseMaterial = function NoiseMaterial()
         var noiseCanvas = this.generateNoiseCanvas(256, 256);
 
         var texture = new Texture( this.getWorld(), noiseCanvas );
-        this._glTextures.push( texture );
+        this._glTextures["u_tex0"] = texture ;
 
         // set up the shader
         this._shader = this.buildShader( noiseMaterialDef );
@@ -165,22 +173,51 @@ var NoiseMaterial = function NoiseMaterial()
         var NJUtils = require("js/lib/NJUtils").NJUtils;
         var app = viewUtils.getApplication();
         var noiseCanvas  = app.njUtils.make("canvas", {"data-RDGE-id": NJUtils.generateRandom()}, app.ninja.currentDocument);
+        noiseCanvas.width = w;
+        noiseCanvas.height = h;
 
         // create the image data
         var ctx = noiseCanvas.getContext( "2d" );
         if (!ctx)  throw new Error( "Could not get 2D context for noise canvas" );
         var imageData = ctx.createImageData( w, h );
         var data = imageData.data;
-
         
+        var pn = new PerlinNoise();
+        var r, g, b;
+        var n;
+        var index = 0;
+        for (var iRow=0;  iRow<256;  iRow++)
+        {
+            var y = 10.0*(iRow/255.0);
+            for (iCol=0; iCol<256;  iCol++)
+            {
+                var x = 10.0*(iCol/255.0);
+                n = pn.noise( x, y, 0.8 );
+                r = b = g = Math.round( 255*n );
+
+                r = 255;  g = 0;  b = 0;
+
+                data[index] = r;
+                data[index+1] = g;
+                data[index+2] = b;
+                data[index+3] = 1.0;
+
+
+                index += 4;
+            }
+        }
+
+        ctx.putImageData( imageData, 0, 0 );
+        return noiseCanvas;
     }
+}
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // This is a port of Ken Perlin's Java code.
-    this.PerlinNoise = function() {
+    PerlinNoise = function() {
 
        var p = new Array(512)
        var permutation = [ 151,160,137,91,90,15,
@@ -258,8 +295,6 @@ var NoiseMaterial = function NoiseMaterial()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-};
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // RDGE shader
