@@ -38,7 +38,25 @@ uniform sampler2D u_tex0;
 
 varying vec2    v_texCoord0;
 
+//#if defined (USE_LIGHTS)
+	uniform sampler2D u_normalMap;
+	varying vec3    vNormal;
+	varying vec3    vECPos;
+//#endif
+
+// ADD LIGHT FUNCTIONS HERE
+
 
 void main() {
-   gl_FragColor = texture2D(u_tex0, v_texCoord0);
+	//gl_FragColor = texture2D(u_tex0, v_texCoord0);
+    vec4 color = texture2D(u_tex0, v_texCoord0);
+
+	vec4 ambient = vec4(0,0,0,0),  diffuse = vec4(0,0,0,0),  specular = vec4(0,0,0,0);
+    // ADD LIGHT CALLS HERE
+
+    #if defined (USE_LIGHTS)
+        gl_FragColor = color + u_lightAmount*((color*(ambient + diffuse)) + specular);
+    #else
+        gl_FragColor = color;
+    #endif
 }
