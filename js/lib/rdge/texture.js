@@ -265,7 +265,9 @@ function Texture( dstWorld, texMapName,  wrap, mips )
         }
         var renderer = world.getRenderer();
 
-        var width = srcCanvas.width,  height = srcCanvas.height;
+        if (!srcCanvas.width) srcCanvas.width = srcCanvas.clientWidth;
+        if (!srcCanvas.height) srcCanvas.height = srcCanvas.clientHeight;
+        var width = srcCanvas.width, height = srcCanvas.height;
         if (!this.isPowerOfTwo(width) || !this.isPowerOfTwo(height))
         {
             width = this.nextLowerPowerOfTwo( width );
@@ -291,9 +293,11 @@ function Texture( dstWorld, texMapName,  wrap, mips )
             return;
         }
 
-        // copy the source canvas to the context to be used in the texture
+    	// copy the source canvas to the context to be used in the texture
+        //renderCtx.drawImage(srcCanvas, 0, 0, width, height);
         renderCtx.drawImage(srcCanvas, 0, 0, width, height);
-        /*
+
+    	/*
         renderCtx.fillStyle = "#00000a";
         renderCtx.fillRect(0, 0, width, height );
         var imageData = renderCtx.getImageData(0,0,width, height);

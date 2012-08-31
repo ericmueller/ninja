@@ -98,7 +98,7 @@ var MandelMaterial = function MandelMaterial() {
 		var nProps = this._propNames.length;
 		for (var i=0; i<nProps;  i++)
 			this.setProperty( this._propNames[i],  this._propValues[this._propNames[i]]  );
-};
+    };
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////

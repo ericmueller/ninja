@@ -35,7 +35,9 @@ void CalculatePointLight( in vec3 lightPos,  in vec3 normal, in vec4 lightAmb,  
 
     // normal mapping
     #if defined (USE_NORMAL_MAP)
-        vec3 mapNormal = texture2D(u_normalMap, vec2(vNormal.w, vECPos.w)).xyz * 2.0 - 1.0;
+		vec2 tc = v_texCoord0;
+		vec3 tm = texture2D(u_tex0, tc).xyz;
+        vec3 mapNormal = texture2D(u_normalMap, tc).xyz * 2.0 - 1.0;
         mapNormal = normalize(mapNormal.x*vec3(normal.z, 0.0, -normal.x) + vec3(0.0, mapNormal.y, 0.0) + mapNormal.z*normal);
     #else
         vec3 mapNormal = vNormal.xyz;
@@ -80,10 +82,18 @@ void CalculatePointLight( in vec3 lightPos,  in vec3 normal, in vec4 lightAmb,  
     #if defined( USE_ENV_MAP )
         specular = 2.0 * pf * envMapTexel;
     #else
-        specular = 2.0 * vec4(pf) * lightSpec;
+        specular = 2.0 * vec4(pf,pf,pf,1.0) * lightSpec;
     #endif
 
-    rtnAmbient  += ambient;
-    rtnDiffuse  += diffuse;
-    rtnSpecular += specular;
+    //rtnAmbient  += vec4(ambient);
+    //rtnDiffuse  += vec4(diffuse);
+    //rtnSpecular += vec4(specular);
+
+	#if defined (USE_NORMAL_MAP)
+		bool ok = tm.x > 0.0;
+		if (ok)
+		{
+			rtnSpecular = vec4(1.0, 0.0, 0.0,  1.0);
+		}
+	#endif
 }

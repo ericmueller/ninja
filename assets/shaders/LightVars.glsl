@@ -55,6 +55,7 @@ uniform vec4 u_light3Amb;
 uniform vec4 u_light3Spec;
 uniform  int u_light3Type;
 
+
 //material uniforms
 uniform vec4   u_matAmbient;
 uniform vec4   u_matDiffuse;
